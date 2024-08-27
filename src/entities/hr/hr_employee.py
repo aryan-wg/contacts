@@ -25,4 +25,4 @@ class Hr_employee(Worker):
     def save(self):
         print("Saving the hr employee info to db")
 
-print("hr_employee.py")
+# print("hr_employee.py")

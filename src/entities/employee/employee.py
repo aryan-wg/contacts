@@ -13,7 +13,7 @@ class Employee(ABC):
         # street,city,state,postal code, country
 
         self.address = address
-        print("new employee instantiated ", self.name)
+        # print("new employee instantiated ", self.name)
         # print(self.name,self.phone,self.email,self.address)
 
     def search_other_employee(name):

@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
+from time import time
+from math import ceil
 
 
 class Employee(ABC):
     def __init__(self, *args):
-        name, phone, email, address = args
+        name, phone, email, address, empId = args
 
         self.name = name
         self.phone = phone
         self.email = email
-
+        self.empId = empId
         # this address will be a dict that has information
         # street,city,state,postal code, country
 
@@ -19,9 +21,18 @@ class Employee(ABC):
     def search_other_employee(name):
         print("searchin for", name)
 
-    def request_self_info_change(updated_user):
+    def request_self_info_change(updated_info):
+        # created_by integer NOT NULL, updated_info text NOT NULL, hr_assigned integer, approved_by_hr integer NOT NULL, remark text, created_at integer NOT NULL, update_commited integer NOT NULL
+        request = {
+            "created_by": self.empId,
+            "updated_name": updated_info,
+            "approved_by_hr": 0,
+            "created_at": ceil(time.time()),
+            "update_commited":0
+        }
+
         print("updated user will be ", updated_user)
-    
+
     def save(self):
         print("Saving the employee info to db")
 

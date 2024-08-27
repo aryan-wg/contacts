@@ -28,17 +28,18 @@ def main():
 
     new_admin = Admin(name, phone, email, address)
 
-        # "empId": 31237891,
-    new_person_data  = {
-        "name": "aryan kk",
+    # "empId": 31237891,
+    new_person_data = {
+        "empId":None,
+        "name": "",
         "phone": 718937819,
         "email": "this is email",
         "address": "something",
     }
     create_tables()
 
-    write_to_table("employees",new_person_data)    
-    read_from_table()
+    write_to_table("employees", new_person_data)
+    read_from_table("employees")
     new_worker = new_admin.create_worker(
         "employeeId1",
         ["employeeId2"],
@@ -69,7 +70,8 @@ def main():
         },
     )
 
-    worker_info = (("reportin_to_empID", ["reported_by_empIDs"], personal_info),)
+    worker_info = (
+        ("reportin_to_empID", ["reported_by_empIDs"], personal_info),)
 
     hr_emp_info = worker_info
 

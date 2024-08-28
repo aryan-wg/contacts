@@ -4,9 +4,9 @@ from ..worker.worker import Worker
 class Hr_employee(Worker):
     def __init__(self, *args):
         print(args)
-
+        
         worker_information = args
-
+        self.type = "hr"
         self.pending_requests = []
         self.closed_requests = []
 

@@ -2,7 +2,12 @@ from src.auth import Auth
 from src.database.db_setup import create_tables, insert_sample_data
 from src.entities.admin.admin import Admin
 from src.utils.db_utils import read_entire_table, write_to_table
-from src.ui.user_interfaces import Admin_interface, Auth_interface
+from src.ui.user_interfaces import (
+    Admin_interface,
+    Worker_interface,
+    Hr_interface,
+    Auth_interface,
+)
 
 import bcrypt
 
@@ -12,12 +17,16 @@ def main():
     # insert_sample_data()
 
     active_auth_ui = Auth_interface()
-    empId, password = active_auth_ui.get_login()
-    print(empId,password)
-    auth_obj = Auth(empId, password)
-    user_obj = auth_obj.login()
-    if(user_obj.type ==)
-    active_admin_ui = Admin_interface(user_obj)
+    user_obj = active_auth_ui.login()
+    if user_obj.type == "admin":
+        active_user_ui = Admin_interface(user_obj)
+    elif user_obj.type == "worker":
+        active_user_ui = Worker_interface()
+    elif user_obj.type == "hr":
+        active_user_ui = Hr_interface()
+
+    active_user_ui.show_menue()
+
     {
         # while True:
         # user_name = input("Enter your employee Id :\n")

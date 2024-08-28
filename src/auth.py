@@ -26,7 +26,6 @@ class Auth:
                 check = bcrypt.checkpw(password,hashed_db.encode())
                 if check:
                     if user_type == "admin":
-
                         # empId, name, phone, email, address
                         new_admin = Admin(empId,name,phone,email,address)
                         return new_admin
@@ -42,6 +41,7 @@ class Auth:
                     #
                     #     new_worker = Worker()
                     #     pass
-        
+                else:
+                    return None
         except NameError as err:
             pass

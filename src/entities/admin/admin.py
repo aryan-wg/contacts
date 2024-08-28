@@ -4,11 +4,12 @@ from ..hr.hr_employee import Hr_employee
 from ...utils.db_utils import read_fields_from_record, write_to_table
 from ...utils.general_utils import parse_requests
 
+
 class Admin(Employee):
     def __init__(self, empId, name, phone, email, address):
         self.pending_req = self.get_pending_req()
         self.closed_req = self.get_closed_req()
-
+        self.type = "admin"
         super().__init__(empId, name, phone, email, address)
         # print("new admin initiated", self.name)
 

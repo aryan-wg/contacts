@@ -4,7 +4,7 @@ from ..employee.employee import Employee
 class Worker(Employee):
     def __init__(self, *args):
         reports_to, reported_by, personal_info = args
-
+        self.type = "worker"
         self.reports_to = reports_to
         self.reported_by = reported_by
         super().__init__(*personal_info)

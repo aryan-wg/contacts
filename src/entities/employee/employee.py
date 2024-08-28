@@ -5,7 +5,7 @@ from math import ceil
 
 class Employee(ABC):
     def __init__(self, *args):
-        name, phone, email, address, empId = args
+        empId,name, phone, email, address = args
 
         self.name = name
         self.phone = phone

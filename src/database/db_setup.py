@@ -35,17 +35,37 @@ def create_tables():
             request_id integer primary key AUTOINCREMENT,
             created_by integer NOT NULL,
             updated_info text NOT NULL,
-            hr_assigned integer,
-            approved_by_hr integer NOT NULL,
+            assigned_hr integer,
             remark text,
             created_at integer NOT NULL,
-            update_commited integer NOT NULL)"""
+            update_commited_at integer NOT NULL,
+            request_status text NOT NULL)""",
     ]
+
     for query in table_creation_queries:
         cur.execute(query)
 
     con.commit()
 
+sample_data = [
+
+    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('Aryan',1234567890,'aryan@gmail.com','address_string','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','admin')",
+    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('shruti',99999999999,'shruti@gmail.com','shruti_address_string','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','hr')",
+    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('dev',8888888888,'dev@gmail.com','dev_address_string','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','worker')",
+
+    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (1,'updated_info_string',2,1724827086720,0,'approved_by_hr')",
+    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (2,'shruti_updated_info',2,1724827986720,0,'hr_not_assigned')",
+    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (3,'dev_updated_info',2,1724828086720,0,'rejected')",
+
+    "INSERT INTO relations (reports_to , reported_by , team ) VALUES (0,1,'devs')",
+    "INSERT INTO relations (reports_to , reported_by , team ) VALUES (0,2,'devs')",
+    "INSERT INTO relations (reports_to , reported_by , team ) VALUES (1,2,'devs')",
+]
+
+def insert_sample_data():
+    for sample_query in sample_data:
+        cur.execute(sample_query)
+    con.commit()
 
 # def create_db_entry():
 #     pass

@@ -13,3 +13,18 @@ def parse_requests(requests):
             "request_status": request[7],
         }
         requests_parsed.append(temp)
+
+    return requests_parsed
+
+
+def parse_relations(relations):
+    relations_parsed = []
+    for relation in relations:
+        temp = {
+            "reports_to": relation[0],
+            "employee": relation[1],
+            "team": relation[2],
+        }
+        relations_parsed.append(temp)
+
+    return relations_parsed

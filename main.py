@@ -18,6 +18,7 @@ def main():
 
     active_auth_ui = Auth_interface()
     user_obj = active_auth_ui.login()
+    active_user_ui = None
     if user_obj.type == "admin":
         active_user_ui = Admin_interface(user_obj)
     elif user_obj.type == "worker":

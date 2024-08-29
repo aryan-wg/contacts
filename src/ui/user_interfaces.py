@@ -4,10 +4,18 @@ from ..auth import Auth
 class Admin_interface:
     def __init__(self, admin):
         self.admin = admin
-        print("this is the home interface")
 
     def show_menue(self):
-        print("""this is the menue of admin""")
+        op = int(input(f"""
+        Welcome {self.admin.name} .....
+            Press the number in front of the option to perform an action :-
+              1 : Show pending requests
+              2 : Create a new worker
+              3 : Create a new HR employee
+              4 : Show all commited requests
+              """)
+        )
+
 
     def show_all_requests(self):
         for request in self.admin.pending_requests:

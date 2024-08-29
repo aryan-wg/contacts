@@ -4,8 +4,8 @@ from math import ceil
 
 
 class Employee(ABC):
-    def __init__(self, *args):
-        empId,name, phone, email, address = args
+    def __init__(self, employee_info):
+        empId,name, phone, email, address = employee_info 
 
         self.name = name
         self.phone = phone

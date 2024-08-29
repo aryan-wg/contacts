@@ -22,25 +22,23 @@ class Auth:
             user = read_fields_from_record("employees", "*", "empId", [empId])
             if user :
                 _,name,phone,email,address,hashed_db,user_type = user[0]
+                
+                employee_info = (empId,name,phone,email,address)
 
                 check = bcrypt.checkpw(password,hashed_db.encode())
                 if check:
                     if user_type == "admin":
-                        # empId, name, phone, email, address
-                        new_admin = Admin(empId,name,phone,email,address)
+                        new_admin = Admin(employee_info)
                         return new_admin
 
-                    # elif user_type == "hr":
-                    #     # pending_requests = []
-                    #     # closed_requests = []
-                    #
-                    #     new_hr = Hr_employee()
-                    #     pass
-                    # elif user_type == "worker":
-                    #     # name, phone, email, address, empId = args
-                    #
-                    #     new_worker = Worker()
-                    #     pass
+                    elif user_type == "hr":
+                        new_hr = Hr_employee(employee_info)
+                        return new_hr
+
+                    elif user_type == "worker":
+                        new_worker = Worker(employee_info)
+                        return new_worker
+
                 else:
                     return None
         except NameError as err:

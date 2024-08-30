@@ -53,9 +53,9 @@ sample_data = [
     "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('shruti',99999999999,'shruti@gmail.com','shruti_address_string','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','hr')",
     "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('dev',8888888888,'dev@gmail.com','dev_address_string','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','worker')",
 
-    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (1,'updated_info_string',2,1724827086720,0,'approved_by_hr')",
-    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (2,'shruti_updated_info',2,1724827986720,0,'hr_not_assigned')",
-    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (3,'dev_updated_info',2,1724828086720,0,'rejected')",
+    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (1,'updated_info_string',2,1724941498,0,'approved_by_hr')",
+    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (2,'shruti_updated_info',2,1724921498,0,'hr_not_assigned')",
+    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (3,'dev_updated_info',2,1724951498,0,'rejected')",
 
     "INSERT INTO relations (reports_to , employee , team ) VALUES (0,1,'devs')",
     "INSERT INTO relations (reports_to , employee , team ) VALUES (1,2,'devs')",

@@ -16,19 +16,19 @@ def write_to_table(table, data_obj):
 
 
 def read_fields_from_record(table, fields, key_type, keys):
+    data = []
     for key in keys:
         if isinstance(key, str):
             cur.execute(f"select {fields} from {table} where {key_type}='{key}'")
         else:
             cur.execute(f"select {fields} from {table} where {key_type} = {key}")
-
-    data = cur.fetchall()
-    # print(data)
-
+        recived = cur.fetchall()
+        for data_item in recived: 
+            data.append(data_item)
     if len(data) > 1:
         return data
     elif len(data) == 1:
-        return [data[0]]
+        return data
     else:
         return None
 

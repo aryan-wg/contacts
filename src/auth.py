@@ -21,6 +21,7 @@ class Auth:
         try:
             user = read_fields_from_record("employees", "*", "empId", [empId])
             if user :
+                print(user)
                 _,name,phone,email,address,hashed_db,user_type = user[0]
                 
                 employee_info = (empId,name,phone,email,address)

@@ -2,7 +2,7 @@ from ..employee.employee import Employee
 from ..worker.worker import Worker
 from ..hr.hr_employee import Hr_employee
 from ...utils.db_utils import read_fields_from_record, write_to_table
-from ...utils.general_utils import parse_requests
+from ...utils.general_utils import parse_requests,populate_requests
 
 
 class Admin(Employee):
@@ -19,6 +19,7 @@ class Admin(Employee):
             "requests", "*", "request_status", ["approved_by_hr"]
         )
         data = parse_requests(data)
+        data = populate_requests(data)
         return data
 
     def get_closed_req(self):
@@ -26,7 +27,9 @@ class Admin(Employee):
         data = read_fields_from_record(
             "requests", "*", "request_status", ["commited", "rejected"]
         )
+        # print("somethin")
         data = parse_requests(data)
+        data = populate_requests(data)
         return data
 
     def edit_worker_info(self, emp_id, updated):

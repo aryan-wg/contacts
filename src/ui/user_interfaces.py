@@ -6,24 +6,39 @@ class Admin_interface:
         self.admin = admin
 
     def show_menue(self):
-        op = int(input(f"""
-        Welcome {self.admin.name} .....
-            Press the number in front of the option to perform an action :-
-              1 : Show pending requests
-              2 : Create a new worker
-              3 : Create a new HR employee
-              4 : Show all commited requests
-              """)
-        )
-
-
-    def show_all_requests(self):
-        for request in self.admin.pending_requests:
+        while True:
+            op = int(input(f"""
+            Welcome {self.admin.name} .....
+                Press the number in front of the option to perform an action :-
+                  1 : Open pending requests
+                  2 : Create a new worker
+                  3 : Create a new HR employee
+                  4 : Show all commited requests
+                  5 : Exit
+                  """)
+            )
+            if op == 1:
+                self.open_pending_requests()
+            elif op == 2:
+                self.create_worker()
+            elif op == 3:
+                self.create_hr_employee()
+            elif op == 4:
+                self.show_all_commited()
+            elif op == 5:
+                exit()
+    
+    def show_all_commited(self):
+        print("Request Id  |  Created By  |  Assigned HR  |  Commited At\n")
+        for request in self.admin.closed_req:
+            print(f"{request["request_id"]}  |  {request["created_by"]}  |  {request["assigned_hr"]}  |  {request["update_commited_at"]}")            
+    def open_pending_requests(self):
+        for request in self.admin.pending_req:
             pprint(request)
-
-        for request in self.admin.closed_requests:
-            pprint(request)
-
+    def create_worker(self):
+        pass
+    def create_hr_employee(self):
+        pass
 
 class Worker_interface:
     def __init__(self):

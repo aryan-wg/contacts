@@ -1,5 +1,7 @@
 from pprint import pprint
+from ..utils.general_utils import make_printable,take_address_input
 from ..auth import Auth
+from tabulate import tabulate
 
 class Admin_interface:
     def __init__(self, admin):
@@ -20,7 +22,7 @@ class Admin_interface:
             if op == 1:
                 self.open_pending_requests()
             elif op == 2:
-                self.create_worker()
+                self.create_worker_form()
             elif op == 3:
                 self.create_hr_employee()
             elif op == 4:
@@ -29,14 +31,45 @@ class Admin_interface:
                 exit()
     
     def show_all_commited(self):
-        print("Request Id  |  Created By  |  Assigned HR  |  Commited At\n")
-        for request in self.admin.closed_req:
-            print(f"{request["request_id"]}  |  {request["created_by"]}  |  {request["assigned_hr"]}  |  {request["update_commited_at"]}")            
+        requests = self.admin.closed_req
+        keys = ["request_id","created_by","assigned_hr","update_commited_at","created_at"]
+        printable_requests = make_printable(keys,requests)
+        print(tabulate(printable_requests, headers=["Request Id","Created By","Assigned HR","Commited At","Created At"]))
+
     def open_pending_requests(self):
-        for request in self.admin.pending_req:
-            pprint(request)
-    def create_worker(self):
-        pass
+        requests = self.admin.pending_req
+        if not requests:
+            print("There are no pending requests")
+        else :
+            keys = ["request_id","created_by","assigned_hr","update_commited_at","created_at"]
+            printable_requests = make_printable(keys,requests)
+            print(tabulate(printable_requests, headers=["Request Id","Created By","Assigned HR","Commited At","Created At"]))
+            
+            pending_req_ids = [ req[0] for req in printable_requests ]
+            while True:
+                req_id = int(input(("""To commit a request please enter the request id or and hit enter
+                *If you want to got to preivious menue press 0 
+                """)))
+                if req_id in pending_req_ids:
+                    self.admin.commit_request(req_id)
+                elif req_id == 0:
+                    # can also change this to go to prev menue in future
+                    self.show_menue()
+                else :
+                    print("Request not found please try again")
+
+    def create_worker_form(self):
+        print("-----------------Creatting a new worker-----------------")
+        worker_dict = {}
+        worker_dict["name"] = input("Enter worker name : ")
+        worker_dict["phone"] = int(input("Enter worker's phone number : "))
+        worker_dict["email"]  = input("Enter worker's email address : ")
+        worker_dict["address"]= take_address_input()
+        worker_dict["password"] = input("Enter worker's initial password : ")
+        
+        self.admin.create_new_worker(worker_dict)
+        return True 
+        
     def create_hr_employee(self):
         pass
 
@@ -74,3 +107,11 @@ class Auth_interface:
             user_obj = auth_obj.login()
         print(user_obj)
         return user_obj 
+
+# printable_requests = []
+# for request in requests:
+#     printable_req = []
+#     for key in keys:
+#         printable_req.append(request[key]) 
+#     printable_requests.append(printable_req)
+#     

@@ -1,6 +1,6 @@
 from ..database.db_setup import get_cursor, get_con
 from functools import reduce
-
+from pprint import pprint
 tables_insert_map = {
     "employees": "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES (:name,:phone,:email,:address,:password,:user_type)",
     "requests": "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (:created_by,:updated_info,:assigned_hr,:created_at,:update_commited_at,:request_status)",
@@ -11,8 +11,9 @@ con = get_con()
 
 
 def write_to_table(table, data_obj):
-    print(cur.execute(tables_insert_map[table], data_obj))
-    print(con.commit())
+    cur.execute(tables_insert_map[table], data_obj)
+    con.commit()
+    return True
 
 
 def read_fields_from_record(table, fields, key_type, keys):
@@ -72,7 +73,21 @@ def read_by_multiple_att_and_keys(table, fields, key_types, keys):
     data = cur.fetchall()
     return data
 
+def update_one_record(table,values_dict,key_type,key):
+    set_string = ""
+    argument_dict = {key_type:key}
+    for key,value in values_dict.items():
+        set_string+= f" {key} = :{key}," 
 
+        argument_dict[f"{key}"] = value
+
+    pprint(argument_dict)
+    set_string = set_string[0:-1]
+    query_string = f"update {table} set{set_string} where {key_type} = :{key_type}"
+    # print(query_string)
+    cur.execute(query_string,argument_dict)
+    con.commit()
+    return True
 # def read_one_from_table(table,field,key_type,key):
 #     cur.execute(f"select {field} from {table} where {key_type}='{key}'")
 #     item, = cur.fetchone()

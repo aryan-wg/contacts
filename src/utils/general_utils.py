@@ -1,8 +1,37 @@
 from .db_utils import read_fields_from_record
 from datetime import datetime, time
 
+import bcrypt
+import json
+
+def take_address_input():
+    address_dict = {}
+    address_dict["street"] = input("Enter street : ")
+    address_dict["postal_code"] = input("Enter postal code : ")
+    address_dict["city"]= input("Enter city : ") 
+    address_dict["state"] = input("Enter state : ")
+    address_dict["country"] = input("Enter country : ")
+    address_str = json.dumps(address_dict)
+    return address_str 
+
+def hash_pass(password):
+    return bcrypt.hashpw(password.encode(),bcrypt.gensalt(12))
+
+def check_pass(password,hashed_db):
+    return  bcrypt.checkpw(password.encode(),hashed_db.encode())
+
+def make_printable(keys,original_data):
+    printable_data = []
+    for item in original_data:
+        printable_item = []
+        for key in keys:
+            printable_item.append(item[key]) 
+        printable_data.append(printable_item)
+
+    return printable_data
+
 def parse_requests(requests):
-    print(requests)
+    # print(requests)
     requests_parsed = []
     for request in requests:
         temp = {
@@ -18,7 +47,6 @@ def parse_requests(requests):
         requests_parsed.append(temp)
 
     return requests_parsed
-
 
 def populate_requests(requests):
     populated = []
@@ -39,7 +67,6 @@ def populate_requests(requests):
         print(request)
         populated.append(request)
     return populated 
-
 
 def parse_relations(relations):
     relations_parsed = []

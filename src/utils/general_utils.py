@@ -21,6 +21,8 @@ def check_pass(password,hashed_db):
     return  bcrypt.checkpw(password.encode(),hashed_db.encode())
 
 def make_printable(keys,original_data):
+    # print("original",type(original_data[0]))
+    # print("keys",keys)
     printable_data = []
     for item in original_data:
         printable_item = []

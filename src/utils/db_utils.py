@@ -1,10 +1,11 @@
+from sqlite3 import Cursor
 from ..database.db_setup import get_cursor, get_con
 from functools import reduce
 from pprint import pprint
 tables_insert_map = {
-    "employees": "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES (:name,:phone,:email,:address,:password,:user_type)",
-    "requests": "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (:created_by,:updated_info,:assigned_hr,:created_at,:update_commited_at,:request_status)",
-    "relations": "INSERT INTO relations (reports_to , reported_by , team ) VALUES (:reports_to,:reported_by,:team)",
+    "employees": "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES (:name,:phone,:email,:address,:password,:user_type) RETURNING *",
+    "requests": "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (:created_by,:updated_info,:assigned_hr,:created_at,:update_commited_at,:request_status) RETURNING *",
+    "relations": "INSERT INTO relations (employee , reports_to ) VALUES (:employee,:reports_to) RETURNING *",
 }
 cur = get_cursor()
 con = get_con()
@@ -12,9 +13,9 @@ con = get_con()
 
 def write_to_table(table, data_obj):
     cur.execute(tables_insert_map[table], data_obj)
+    returned = cur.fetchone()
     con.commit()
-    return True
-
+    return returned 
 
 def read_fields_from_record(table, fields, key_type, keys):
     data = []
@@ -33,8 +34,11 @@ def read_fields_from_record(table, fields, key_type, keys):
     else:
         return None
 
+def check_if_exists_in_db(table,key_type,key):
+    cur.execute(f"select exists(select 1 from {table} where {key_type} = {key})")
+    check, = cur.fetchone()
+    return check
 # def read_all_where(table,fields,key_type,key):
-
 
 def read_by_multiple_attributes(table, fields, key_types, keys):
     WHERE_query_str = ""
@@ -81,7 +85,7 @@ def update_one_record(table,values_dict,key_type,key):
 
         argument_dict[f"{key}"] = value
 
-    pprint(argument_dict)
+    # pprint(argument_dict)
     set_string = set_string[0:-1]
     query_string = f"update {table} set{set_string} where {key_type} = :{key_type}"
     # print(query_string)
@@ -96,5 +100,5 @@ def update_one_record(table,values_dict,key_type,key):
 
 def read_entire_table(table):
     cur.execute(f"select * from {table}")
-    print(cur.fetchall())
+    # print(cur.fetchall())
     # print(cur.fetchall())

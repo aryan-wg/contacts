@@ -22,9 +22,9 @@ def main():
     if user_obj.type == "admin":
         active_user_ui = Admin_interface(user_obj)
     elif user_obj.type == "worker":
-        active_user_ui = Worker_interface()
+        active_user_ui = Worker_interface(user_obj)
     elif user_obj.type == "hr":
-        active_user_ui = Hr_interface()
+        active_user_ui = Hr_interface(user_obj)
 
     active_user_ui.show_menue()
 

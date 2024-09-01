@@ -29,7 +29,7 @@ class Worker(Employee):
             return data
         else:
             return None
-    
+
     def see_own_team(self):
         print("seeing own team")
 

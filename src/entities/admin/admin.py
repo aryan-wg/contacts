@@ -1,7 +1,7 @@
 from ..employee.employee import Employee
 from ..worker.worker import Worker
 from ..hr.hr_employee import Hr_employee
-from ...utils.db_utils import read_fields_from_record, update_one_record, write_to_table
+from ...utils.db_utils import read_fields_from_record, update_one_record, write_to_table,check_if_exists_in_db
 from ...utils.general_utils import parse_requests,populate_requests,hash_pass
 
 from math import ceil
@@ -60,36 +60,22 @@ class Admin(Employee):
         update_one_record("requests",request,"request_id",req_id)
         return True
 
-    def create_new_worker(self,new_worker):
-        new_worker["password"] = hash_pass(new_worker["password"])
-        new_worker["user_type"] = "worker"
-        print(new_worker)
-        write_to_table("employees",new_worker)
-        return True
+    def create_new_employee(self,new_employee):
+        new_employee["password"] = hash_pass(new_employee["password"]).decode("utf-8")
+        created_employee = write_to_table("employees",new_employee)
+        return created_employee 
 
-        # print(*args,"args for creating worker in the admin class")
-        # new_worker = Worker(*args)
-        return new_worker
-
-    def create_hr_emp(self, *args):
-        pass
-        # new_hr_emp = Hr_employee(*args)
-
-        # this will require the following employee info:
-
-        # data_obj = {
-        #     "employee_name":"string",
-        #     "phone_no":"integer",
-        #     "email":"string",
-        #     "address":"json obj serialised",
-        #     "password":"bcrypt hashed string",
-        #     "user_type":"worker (string)",
-        # }
-
-        # write_to_table ("employees",data_obj)
-        # data_obj = 1
-        # new_hr_emp = None
-        # return new_hr_emp
+    def create_new_relation(self,emp_id,reports_to_emp_id):
+        check = check_if_exists_in_db("employees","empId",reports_to_emp_id)
+        # print("hellow",check)
+        if not check:
+            return "Reporting to employee does not exist"
+        else :
+            new_relation = {}
+            new_relation["employee"] = emp_id
+            new_relation["reports_to"] = reports_to_emp_id
+            created_relation = write_to_table("relations",new_relation)
+            return created_relation
 
     def info(self):
         doc = """

@@ -3,16 +3,41 @@ from datetime import datetime, time
 
 import bcrypt
 import json
+import re
 
 def take_address_input():
     address_dict = {}
+
     address_dict["street"] = input("Enter street : ")
-    address_dict["postal_code"] = input("Enter postal code : ")
+
+    address_dict["postal_code"] = int(input("Enter postal code (must be a 6 digit integer) : "))
+    # while True:
+    #     address_dict["postal_code"] = int(input("Enter postal code (must be a 6 digit integer) : "))
+    #     
+    #     if validate_pin_code(address_dict["postal_code"]):
+    #         break
+    #     else:
+    #         print("Enter a valid pin code \n")
+
     address_dict["city"]= input("Enter city : ") 
     address_dict["state"] = input("Enter state : ")
     address_dict["country"] = input("Enter country : ")
     address_str = json.dumps(address_dict)
     return address_str 
+
+def validate_email(email):
+    return re.fullmatch("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",email)
+
+def validate_phone(phone):
+    phone_str = str(phone)
+    return re.fullmatch("^\d{10}$",phone_str)
+
+def validate_pin_code(pin):
+    pin_str = str(pin)
+    return re.fullmatch("^d{6}$",pin_str) 
+
+def validate_password(password):
+    return re.search("^(?=.*[A-Z](?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$",password)
 
 def hash_pass(password):
     return bcrypt.hashpw(password.encode(),bcrypt.gensalt(12))
@@ -21,6 +46,8 @@ def check_pass(password,hashed_db):
     return  bcrypt.checkpw(password.encode(),hashed_db.encode())
 
 def make_printable(keys,original_data):
+    # print("original",type(original_data[0]))
+    # print("keys",keys)
     printable_data = []
     for item in original_data:
         printable_item = []
@@ -64,7 +91,7 @@ def populate_requests(requests):
         )
         request["created_by"] = record[0][0]
         request["assigned_hr"] = record[1][0]
-        print(request)
+        # print(request)
         populated.append(request)
     return populated 
 

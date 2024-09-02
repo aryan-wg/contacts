@@ -61,7 +61,7 @@ class Admin(Employee):
         return True
 
     def create_new_employee(self,new_employee):
-        new_employee["password"] = hash_pass(new_employee["password"])
+        new_employee["password"] = hash_pass(new_employee["password"]).decode("utf-8")
         created_employee = write_to_table("employees",new_employee)
         return created_employee 
 

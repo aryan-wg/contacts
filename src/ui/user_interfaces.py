@@ -1,8 +1,8 @@
 from pprint import pprint
-from ..utils.general_utils import make_printable,take_address_input, take_user_input
+from ..utils.general_utils import make_printable,take_address_input 
 from ..auth import Auth
 from tabulate import tabulate
-
+import json
 class Admin_interface:
     def __init__(self, admin):
         self.admin = admin
@@ -66,11 +66,12 @@ class Admin_interface:
         print("-----------------Creatting a new employee-----------------")
         user_type_input = int(input("Enter press 1 to create worker and 0 to create HR employee"))
         worker_dict ={}
-        worker_dict["name"] = input("Enter worker name : ")
-        worker_dict["phone"] = int(input("Enter worker's phone number : "))
-        worker_dict["email"]  = input("Enter worker's email address : ")
-        worker_dict["address"]= take_address_input()
-        worker_dict["password"] = input("Enter worker's initial password : ")
+        worker_dict["user_type"] = "hr" if user_type_input == 0 else "worker"
+        worker_dict["name"] = input(f"Enter {worker_dict["user_type"]}'s name : ")
+        worker_dict["phone"] = int(input(f"Enter {worker_dict["user_type"]}'s phone number : "))
+        worker_dict["email"]  = input(f"Enter {worker_dict["user_type"]}'s email address : ")
+        worker_dict["address"] = json.dumps(take_address_input())
+        worker_dict["password"] = input(f"Enter {worker_dict["user_type"]}'s initial password : ")
 
         created_worker = self.admin.create_new_employee(worker_dict)
 
@@ -83,7 +84,6 @@ class Admin_interface:
         print(f"Employee with id {created_relation[1]} is now reporting to {created_relation[0]}")
         return True 
         
-
 class Worker_interface:
     def __init__(self,worker):
         self.worker = worker
@@ -113,7 +113,7 @@ class Worker_interface:
         keys = ["name","phone","email","empId","address"]
         printable_data_list = make_printable(keys,[profile_info])
         # address_keys = ["city","street","state","postal_code","country"]
-        address = printable_data_list[0][-1]
+        address = json.loads(printable_data_list[0][-1])
         # print(type(address))
         str_address = ""
         for key,value in address.items():
@@ -125,6 +125,8 @@ class Worker_interface:
         op = int(input("\nTo request for a change in information press 1, to go back press 0 : "))
         if op == 0:
             self.show_menue()
+        elif op == 1:
+            self.update_info_ui()
         #keys = ["request_id","created_by","assigned_hr","update_commited_at","created_at"]
         # printable_requests = make_printable(keys,requests)
         # print(tabulate(printable_requests, headers=["Request Id","Created By","Assigned HR","Commited At","Created At"]))
@@ -135,11 +137,21 @@ class Worker_interface:
         pass
     
     def update_info_ui(self):
-        worker_dict = take_user_input() 
-        pass
+        worker_dict ={}
+        worker_dict["name"] = input("Enter worker name : ")
+        worker_dict["phone"] = int(input("Enter worker's phone number : "))
+        worker_dict["email"]  = input("Enter worker's email address : ")
+        worker_dict["address"]= take_address_input()
+
+        success = self.worker.request_self_info_change(json.dumps(worker_dict))
+        if success:
+            self.see_my_profile()
+        else :
+            print("There has been some error in creating a request")
+            self.see_my_profile()
 
     def see_own_team(self):
-        pass
+        team_list = self.worker.my_team()
     
 class Hr_interface:
     def __init__(self,hr_employee):

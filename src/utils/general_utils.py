@@ -6,6 +6,7 @@ import json
 
 def take_address_input():
     address_dict = {}
+
     address_dict["street"] = input("Enter street : ")
     address_dict["postal_code"] = input("Enter postal code : ")
     address_dict["city"]= input("Enter city : ") 

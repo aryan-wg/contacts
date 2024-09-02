@@ -61,14 +61,14 @@ changed_values_dict = {
 }
 
 string = json.dumps(changed_values_dict)
-
+srting = '{"name": "ak", "phone": 1, "email": "ak@k", "address": "{\"street\": \"21\", \"postal_code\": \"2000\", \"city\": \"sre\", \"state\": \"up\", \"country\": \"ind\"}"}'
 sample_data = [
-    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('Aryan',1234567890,'aryan@gmail.com','address_string','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','admin')",
-    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('shruti',99999999999,'shruti@gmail.com','shruti_address_string','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','hr')",
-    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('dev',8888888888,'dev@gmail.com','dev_address_string','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','worker')",
+    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('Aryan',1234567890,'aryan@gmail.com','{\"street\": \"21\", \"postal_code\": \"2008\", \"city\": \"sre\", \"state\": \"ind\", \"country\": \"ind\"}','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','admin')",
+    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('shruti',99999999999,'shruti@gmail.com','{\"street\": \"21\", \"postal_code\": \"2008\", \"city\": \"sre\", \"state\": \"ind\", \"country\": \"ind\"}','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','hr')",
+    "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES ('dev',8888888888,'dev@gmail.com','{\"street\": \"21\", \"postal_code\": \"2008\", \"city\": \"sre\", \"state\": \"ind\", \"country\": \"ind\"}','$2b$12$etdIcyequaX8BS.Xfof50.FX8AOHLFa8A6W/.Gb0iHATPRjZtsiXe','worker')",
     f"INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (1,'{string}',2,1724941498,0,'approved_by_hr')",
-    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (2,'shruti_updated_info',2,1724921498,0,'hr_not_assigned')",
-    "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (3,'dev_updated_info',2,1724951498,0,'rejected')",
+    f"INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (2,'{string}',2,1724921498,0,'hr_not_assigned')",
+    f"INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (3,'{string}',2,1724951498,0,'rejected')",
     "INSERT INTO relations (reports_to , employee , team ) VALUES (0,1,'devs')",
     "INSERT INTO relations (reports_to , employee , team ) VALUES (1,2,'devs')",
     "INSERT INTO relations (reports_to , employee , team ) VALUES (1,3,'devs')",

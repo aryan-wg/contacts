@@ -1,12 +1,13 @@
-from abc import ABC, abstractmethod
-from time import time
-from math import ceil
+from abc import abstractmethod,ABC 
 import json
-
+import time
+from ...utils.db_utils import read_fields_from_record, write_to_table
+from math import ceil
+import random
 class Employee(ABC):
     def __init__(self, employee_info):
         empId,name, phone, email, json_str_address = employee_info 
-
+        print(json_str_address)
         self.name = name
         self.phone = phone
         self.email = email
@@ -25,18 +26,23 @@ class Employee(ABC):
     def search_other_employee(name):
         print("searchin for", name)
 
-    def request_self_info_change(updated_info):
+    def request_self_info_change(self,updated_info):
         # created_by integer NOT NULL, updated_info text NOT NULL, hr_assigned integer, approved_by_hr integer NOT NULL, remark text, created_at integer NOT NULL, update_commited integer NOT NULL
+        all_hr = read_fields_from_record("employees","empId","user_type",["hr"])
+        all_hr = [tuple_emp_id[0] for tuple_emp_id in all_hr ]
+        # print(all_hr)
         request = {
             "created_by": self.empId,
-            "updated_name": updated_info,
-            "approved_by_hr": 0,
+            "updated_info": updated_info,
+            "assigned_hr": random.choice(all_hr),
             "created_at": ceil(time.time()),
-            "update_commited":0
+            "update_commited_at":0,
+            "request_status":"hr_assigned",
+            "remark":None,
         }
-
-        print("updated user will be ", updated_user)
-
+        created_request = write_to_table("requests",request)
+        print("updated user will be ", created_request)
+        return True
     def save(self):
         print("Saving the employee info to db")
 

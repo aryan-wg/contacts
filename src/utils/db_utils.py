@@ -27,9 +27,7 @@ def read_fields_from_record(table, fields, key_type, keys):
         recived = cur.fetchall()
         for data_item in recived: 
             data.append(data_item)
-    if len(data) > 1:
-        return data
-    elif len(data) == 1:
+    if len(data) >= 1:
         return data
     else:
         return None

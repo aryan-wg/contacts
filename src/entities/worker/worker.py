@@ -30,9 +30,20 @@ class Worker(Employee):
         else:
             return None
 
-    def see_own_team(self):
-        print("seeing own team")
-
+    def my_team(self):
+        i_report_to = read_fields_from_record("relations","reports_to","employee",self.empId)
+        head = i_report_to
+        team_list = [i_report_to,self.empId]
+        while not head == 0:
+            higher = read_fields_from_record("relations","reports_to","employee",head)
+            print(higher)
+            team_list.insert(0,higher[0])
+            head = higher[0]
+        while not head == None:
+            reports_to_me = read_fields_from_record("relations","employee","reports_to",head)
+            team_list.append(reports_to_me[0])
+            head = reports_to_me[0]
+        return team_list
     def info(self):
         return """
                 This is the worker class and it has the following properties :

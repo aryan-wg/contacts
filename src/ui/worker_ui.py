@@ -1,12 +1,12 @@
 from tabulate import tabulate
 from ..utils.general_utils import make_printable,take_address_input
-from employee_interface import EmployeeInterface
+from .employee_interface import EmployeeInterface
 
 import json
 class Worker_interface(EmployeeInterface):
-    def __init__(self,employee):
-        super.__init__(employee) 
-
+    def __init__(self,worker):
+        super().__init__(worker) 
+        self.worker = worker 
     def show_menue(self):
         op = int(input(f"""
         Welcome {self.employee.name} .....
@@ -29,5 +29,5 @@ class Worker_interface(EmployeeInterface):
             exit()
 
     def see_own_team(self):
-        # team_list = self.my_team()
+        team_list = self.worker.my_team()
         print("not implemented")

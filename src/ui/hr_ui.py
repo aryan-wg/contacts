@@ -1,4 +1,4 @@
-from ui.worker_ui import Worker_interface
+from .worker_ui import Worker_interface
 from ..utils.general_utils import make_printable
 
 from tabulate import tabulate
@@ -29,9 +29,10 @@ class Hr_interface(Worker_interface):
             elif op == 4:
                 self.search_other_employee()
             elif op == 5:
-                self.worker.see_own_team()
+                self.see_own_team()
                 self.show_menue()
-    
+            elif op == 6:
+                exit()
     def open_pending_requests(self):
         requests = self.hr.pending_req
         if not requests:

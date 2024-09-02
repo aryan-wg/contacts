@@ -48,7 +48,10 @@ class EmployeeInterface():
     def search_other_employee(self):
         name = input("Enter the name of user you want to search for : ")
         search_result = self.employee.search_other_employee(name)
-        headers = ["Emp Id","Name", "Phone No", "Email"]
-        print(tabulate(search_result, headers))
+        if not len(search_result):
+            print("No such users found ")
+        else:
+            headers = ["Emp Id","Name", "Phone No", "Email"]
+            print(tabulate(search_result, headers))
 
 

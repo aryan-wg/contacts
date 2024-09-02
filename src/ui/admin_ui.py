@@ -1,10 +1,10 @@
-from ui.employee_interface import EmployeeInterface 
+from ..ui.employee_interface import EmployeeInterface 
 from ..utils.general_utils import make_printable,take_address_input
 from tabulate import tabulate
 import json
 class Admin_interface(EmployeeInterface):
     def __init__(self, admin):
-        super.__init__(admin)
+        super().__init__(admin)
         self.admin = admin
     def show_menue(self):
         while True:

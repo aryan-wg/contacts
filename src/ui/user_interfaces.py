@@ -1,5 +1,5 @@
 from pprint import pprint
-from ..utils.general_utils import make_printable,take_address_input, validate_email, validate_phone ,validate_password
+from ..utils.general_utils import make_printable,take_address_input, validate_email, validate_phone ,validate_password 
 from ..auth import Auth
 from tabulate import tabulate
 import json

@@ -44,7 +44,6 @@ class Employee(ABC):
         created_request = write_to_table("requests",request)
         print("updated user will be ", created_request)
         return True
-
     def save(self):
         print("Saving the employee info to db")
 

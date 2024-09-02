@@ -38,6 +38,7 @@ def check_if_exists_in_db(table,key_type,key):
     return check
 # def read_all_where(table,fields,key_type,key):
 
+<<<<<<< HEAD
 def match_string_in_field(table,get_fields_str,field,match):
     query_string = f"select {get_fields_str} from {table} where {field} like '{match}%'"
     cur.execute(query_string)
@@ -45,6 +46,8 @@ def match_string_in_field(table,get_fields_str,field,match):
     # print(data)
     return data
 
+=======
+>>>>>>> e51ead6abc438c15429027df227ca517de21a36a
 def read_by_multiple_attributes(table, fields, key_types, keys):
     WHERE_query_str = ""
     key_value_dict = {key_types[i]: keys[i] for i in range(len(key_types))}

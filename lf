@@ -1,0 +1,77 @@
+[33mcommit a946e939747c4ba2ac716a7caa434de1fd242c66[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: Aryan Kamboj <Aryan.Kamboj@watchguard.com>
+Date:   Mon Sep 2 15:09:41 2024 +0530
+
+    seperated all the ui classes and added the inherited functions in menues
+
+[33mcommit 6dd0e9ee3652aa1448e883d6b682b8edb021f096[m
+Author: Aryan Kamboj <Aryan.Kamboj@watchguard.com>
+Date:   Sat Aug 31 10:56:08 2024 +0530
+
+    firday eod commit
+
+[33mcommit 7ab2c10feb7d18c2a7cb65e3cbef0790ece88890[m
+Author: Aryan_kamboj <aryankambozz@gmail.com>
+Date:   Fri Aug 30 07:04:27 2024 +0530
+
+    admin ui
+
+[33mcommit fa6800d66816337c745e7fed13dd6ec3485cd16f[m
+Author: Aryan Kamboj <Aryan.Kamboj@watchguard.com>
+Date:   Thu Aug 29 17:49:41 2024 +0530
+
+    Thursday EOD commit
+
+[33mcommit b780b91c36a309b59a09e85c6b31507fd75b538a[m
+Author: Aryan_kamboj <aryankambozz@gmail.com>
+Date:   Wed Aug 28 22:23:32 2024 +0530
+
+    login interface working properly
+
+[33mcommit 7888d82bec869a105b27ba4ae1e4b39bcfcde9f6[m
+Author: Aryan Kamboj <Aryan.Kamboj@watchguard.com>
+Date:   Wed Aug 28 17:56:07 2024 +0530
+
+    wednesday eod
+
+[33mcommit a3872d8a14769d2fd36ffc88213a5342a9b67c46[m
+Author: Aryan Kamboj <Aryan.Kamboj@watchguard.com>
+Date:   Wed Aug 28 10:41:38 2024 +0530
+
+    removed __pycache__
+
+[33mcommit 1b8956b51250dd02dc9da33bc35acfda596c154f[m
+Author: Aryan_kamboj <aryankambozz@gmail.com>
+Date:   Tue Aug 27 23:17:03 2024 +0530
+
+    creation strings added
+
+[33mcommit b8a7b1cd4b8b520ac8f512dbd916476184deb462[m
+Author: Aryan Kamboj <aryan.kamboj@watchguard.com>
+Date:   Tue Aug 27 20:42:06 2024 +0530
+
+    done something
+
+[33mcommit 0a117fcdcc4012c8c8063dd2d9a52c35462546f2[m
+Author: Aryan Kamboj <aryan.kamboj@watchguard.com>
+Date:   Tue Aug 27 17:49:09 2024 +0530
+
+    day 2 completed
+
+[33mcommit d61797f12aa415b82357dd2cfbe29326d4d71adb[m
+Author: Aryan Kamboj <aryan.kamboj@watchguard.com>
+Date:   Tue Aug 27 15:08:01 2024 +0530
+
+    more __pycache__ removed
+
+[33mcommit 9c7d5b9c417b2f0e68f45975176e206092a4e4a7[m
+Author: Aryan Kamboj <aryan.kamboj@watchguard.com>
+Date:   Tue Aug 27 15:05:39 2024 +0530
+
+    removed __pycache__
+
+[33mcommit 7e12c11d38062989fb8d8f279faa19b50dba80d3[m
+Author: Aryan Kamboj <aryan.kamboj@watchguard.com>
+Date:   Sun Aug 25 09:55:13 2024 +0530
+
+    first commit

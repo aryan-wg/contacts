@@ -12,8 +12,8 @@ class Hr_employee(Worker):
         super().__init__(employee_info)
         
         self.type = "hr"
-        self.pending_req = self.get_pending_requests()
-        self.closed_req = self.get_closed_requests()
+        # self.pending_req = self.get_pending_requests()
+        # self.closed_req = self.get_closed_requests()
 
     def get_pending_requests(self):
         # all of the requests that have a status == hr_assigned and assigned_hr == self.empId are pending_requests
@@ -36,7 +36,6 @@ class Hr_employee(Worker):
     def update_request_status(self,req_id, remark,status):
         request = read_fields_from_record("requests","*","request_id",[req_id])
         request = parse_requests(request)
-        # print(request)
         request = request[0]
         # request has a possible value of none which can cause error here 
 

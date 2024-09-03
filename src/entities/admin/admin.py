@@ -11,8 +11,8 @@ from pprint import pprint
 import json  
 class Admin(Employee):
     def __init__(self, worker_info ):
-        self.pending_req = self.get_pending_req()
-        self.closed_req = self.get_closed_req()
+        # self.pending_req = self.get_pending_req()
+        # self.closed_req = self.get_closed_req()
         self.type = "admin"
         super().__init__(worker_info)
         # print("new admin initiated", self.name)

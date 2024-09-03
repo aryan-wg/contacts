@@ -34,7 +34,7 @@ class Hr_interface(Worker_interface):
             elif op == 6:
                 exit()
     def open_pending_requests(self):
-        requests = self.hr.pending_req
+        requests = self.hr.get_pending_requests()
         if not requests:
             print("There are no pending requests")
         else :
@@ -62,7 +62,7 @@ class Hr_interface(Worker_interface):
             print("Request not found please try again")
 
     def show_closed_reqests(self):
-        requests = self.hr.closed_req
+        requests = self.hr.get_closed_requests()
         if not requests:
             print("There are no pending requests")
         else:

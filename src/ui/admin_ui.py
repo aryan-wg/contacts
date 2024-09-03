@@ -6,6 +6,7 @@ class Admin_interface(EmployeeInterface):
     def __init__(self, admin):
         super().__init__(admin)
         self.admin = admin
+
     def show_menue(self):
         while True:
             op = int(input(f"""
@@ -35,13 +36,13 @@ class Admin_interface(EmployeeInterface):
             # elif op == 6:
                  
     def show_all_commited(self):
-        requests = self.admin.closed_req
+        requests = self.admin.get_closed_req()
         keys = ["request_id","created_by","assigned_hr","update_commited_at","created_at"]
         printable_requests = make_printable(keys,requests)
         print(tabulate(printable_requests, headers=["Request Id","Created By","Assigned HR","Commited At","Created At"]))
 
     def open_pending_requests(self):
-        requests = self.admin.pending_req
+        requests = self.admin.get_pending_req()
         if not requests:
             print("There are no pending requests")
         else :

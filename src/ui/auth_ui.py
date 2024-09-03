@@ -1,11 +1,12 @@
 from ..auth import Auth
+import maskpass
 class Auth_interface:
-    def __init__(self):
-        print("this is the auth interface")
+    # def __init__(self):
+        # print("this is the auth interface")
 
     def get_credentials(self):
         empId = int(input("""Please enter your employee id : """))
-        password = input("""Please enter your password: """)
+        password = maskpass.askpass("""Please enter your password: """)
         return (empId, password)
 
     def login(self):

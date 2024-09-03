@@ -9,9 +9,8 @@ class Hr_employee(Worker):
     def __init__(self,employee_info):
 
         # print("these are the args",employee_info)
-        super().__init__(employee_info)
+        super().__init__((*employee_info,"hr"))
         
-        self.type = "hr"
         # self.pending_req = self.get_pending_requests()
         # self.closed_req = self.get_closed_requests()
 

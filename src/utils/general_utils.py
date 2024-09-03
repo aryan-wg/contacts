@@ -5,17 +5,24 @@ import bcrypt
 import json
 import re
 
+def int_input(message):
+    while True:
+        input_num = input(message)
+        print(input_num.isdigit())
+        if input_num.isdigit():
+            return int(input_num)
+        else :
+            print("Invalid input try again")
 
 def take_address_input():
     address_dict = {}
 
     address_dict["street"] = input("Enter street : ")
 
-    address_dict["postal_code"] = int(
-        input("Enter postal code (must be a 6 digit integer) : ")
+    address_dict["postal_code"] = int_input("Enter postal code (must be a 6 digit integer) : "
     )
     # while True:
-    #     address_dict["postal_code"] = int(input("Enter postal code (must be a 6 digit integer) : "))
+    #     address_dict["postal_code"] = int_input("Enter postal code (must be a 6 digit integer) : "))
     #
     #     if validate_pin_code(address_dict["postal_code"]):
     #         break
@@ -49,7 +56,6 @@ def validate_password(password):
 
 def hash_pass(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt(12))
-
 
 def check_pass(password, hashed_db):
     return bcrypt.checkpw(password.encode(), hashed_db.encode())

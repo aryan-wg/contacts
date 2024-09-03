@@ -1,8 +1,8 @@
-from pprint import pprint
-from ..utils.general_utils import make_printable,take_address_input, validate_email, validate_phone ,validate_password 
-from ..auth import Auth
-from tabulate import tabulate
-import json
+# from pprint import pprint
+# from ..utils.general_utils import make_printable,take_address_input, validate_email, validate_phone ,validate_password 
+# from ..auth import Auth
+# from tabulate import tabulate
+# import json
 # class Admin_interface:
 #     def __init__(self, admin):
 #         self.admin = admin
@@ -241,23 +241,23 @@ import json
 #             keys = ["request_id","created_by","assigned_hr","remark","update_commited_at","created_at",]
 #             printable_requests = make_printable(keys,requests)
 #             print(tabulate(printable_requests, headers=["Request Id","Created By","Assigned HR","Remark","Commited At","Created At"]))
-
-class Auth_interface:
-    def __init__(self):
-        print("this is the auth interface")
-
-    def get_credentials(self):
-        empId = int(input("""Please enter your employee id : """))
-        password = input("""Please enter your password: """)
-        return (empId, password)
-
-    def login(self):
-        user_obj = None
-        # print("hello")
-        while not user_obj :
-            empId, password = self.get_credentials()
-            auth_obj = Auth(empId,password)
-            user_obj = auth_obj.login()
-        # print(user_obj)
-        return user_obj 
+#
+# class Auth_interface:
+#     def __init__(self):
+#         print("this is the auth interface")
+#
+#     def get_credentials(self):
+#         empId = int(input("""Please enter your employee id : """))
+#         password = input("""Please enter your password: """)
+#         return (empId, password)
+#
+#     def login(self):
+#         user_obj = None
+#         # print("hello")
+#         while not user_obj :
+#             empId, password = self.get_credentials()
+#             auth_obj = Auth(empId,password)
+#             user_obj = auth_obj.login()
+#         # print(user_obj)
+#         return user_obj 
 

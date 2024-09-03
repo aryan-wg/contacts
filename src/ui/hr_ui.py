@@ -1,5 +1,6 @@
+from typing import is_typeddict
 from .worker_ui import Worker_interface
-from ..utils.general_utils import make_printable
+from ..utils.general_utils import int_input, make_printable
 
 from tabulate import tabulate
 class Hr_interface(Worker_interface):
@@ -9,7 +10,7 @@ class Hr_interface(Worker_interface):
 
     def show_menue(self):
         while True:
-            op = int(input(f"""
+            op = int_input(f"""
             Welcome {self.hr.name} .....
                 Press the number in front of the option to perform an action :-
                   1 : Open pending requests
@@ -17,9 +18,9 @@ class Hr_interface(Worker_interface):
                   3 : See my profile
                   4 : Search other employees
                   5 : See my team 
-                  6 : Exit
+                  6 : Update password 
+                  7 : Exit
                   """)
-            )
             if op == 1:
                 self.open_pending_requests()
             elif op == 2:
@@ -29,9 +30,10 @@ class Hr_interface(Worker_interface):
             elif op == 4:
                 self.search_other_employee()
             elif op == 5:
-                self.see_own_team()
-                self.show_menue()
+                self.see_own_team_ui(self.employee.empId)
             elif op == 6:
+                self.update_password_ui()
+            elif op == 7:
                 exit()
     def open_pending_requests(self):
         requests = self.hr.get_pending_requests()
@@ -44,7 +46,7 @@ class Hr_interface(Worker_interface):
 
             pending_req_ids = [ req[0] for req in printable_requests ]
             while True:
-                op = int(input("To approve a request press 1, to reject press 2 to go back to previous menue hit 0 \n"))
+                op = int_input("To approve a request press 1, to reject press 2 to go back to previous menue hit 0 \n")
                 if op == 1: 
                     self.update_req_ui("approve",pending_req_ids)
                 elif op == 2:
@@ -52,15 +54,14 @@ class Hr_interface(Worker_interface):
                 elif op == 0:
                     self.show_menue()
 
-    def update_req_ui(self,type,pending_req_ids):
-        req_id = int(input((f"""To {type} a request please enter the request id and hit enter
-        """)))
-        if req_id in pending_req_ids:
-            remark = input("Please enter a remak for the request : ")
-            self.hr.update_request_status(req_id,remark,type)
-        else :
-            print("Request not found please try again")
-
+    def update_req_ui(self,update_type,pending_req_ids):
+            req_id = int_input(f"""To {update_type} a request please enter the request id and hit enter
+            """)
+            if req_id in pending_req_ids:
+                remark = input("Please enter a remak for the request : ")
+                self.hr.update_request_status(req_id,remark,update_type)
+            else :
+                print("Request not found please try again")
     def show_closed_reqests(self):
         requests = self.hr.get_closed_requests()
         if not requests:

@@ -1,12 +1,14 @@
 from abc import abstractmethod,ABC 
 import json
 import time
-from ...utils.db_utils import match_string_in_field, read_fields_from_record, write_to_table
+
+from ...utils.general_utils import check_pass, hash_pass
+from ...utils.db_utils import match_string_in_field, read_fields_from_record, update_one_record, write_to_table
 from math import ceil
 import random
 class Employee(ABC):
     def __init__(self, employee_info):
-        empId,name, phone, email, json_str_address = employee_info 
+        empId,name, phone, email, json_str_address,user_type = employee_info 
         # print(json_str_address)
         self.name = name
         self.phone = phone
@@ -16,6 +18,7 @@ class Employee(ABC):
         # street,city,state,postal code, country
         parsed_address = json.loads(json_str_address)
         self.address = parsed_address
+        self.user_type = user_type
         # print("new employee instantiated ", self.name)
         # print(self.name,self.phone,self.email,self.address)
 
@@ -26,6 +29,16 @@ class Employee(ABC):
     def search_other_employee(self,name):
         data = match_string_in_field("employees","empId, name, phone, email","name",name)  
         return data
+    
+    def update_password(self,old_pass,new_pass):
+        hashed_pass = read_fields_from_record("employees", "password", "empId", [self.empId])[0][0]
+        old_check = check_pass(old_pass,hashed_pass)
+        if old_check :
+            new_hashed = hash_pass(new_pass)
+            return update_one_record("employees",{"password":new_hashed},"empId",self.empId)
+        else:
+            print("Old password did not match \n")
+            return False
 
     def request_self_info_change(self,updated_info):
         # created_by integer NOT NULL, updated_info text NOT NULL, hr_assigned integer, approved_by_hr integer NOT NULL, remark text, created_at integer NOT NULL, update_commited integer NOT NULL
@@ -44,15 +57,12 @@ class Employee(ABC):
         created_request = write_to_table("requests",request)
         print("updated user will be ", created_request)
         return True
-    def save(self):
-        print("Saving the employee info to db")
 
     @abstractmethod
     def info():
         pass
 
 
-# print("employee")
 
 # name = "aryan"
 # phone = "984783723"

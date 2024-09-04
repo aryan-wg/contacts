@@ -30,13 +30,11 @@ class Admin(Employee):
         )
         if data:
             data = parse_requests(data)
-            pprint(data)
             data = populate_requests(data)
-            pprint(data)
         return data
 
     def get_closed_req(self):
-        # for a request to be closed it should have req_status == commited
+        # for a request to be closed it should have req_status == commited or rejected
         data = read_fields_from_record(
             "requests", "*", "request_status", ["commited", "rejected"]
         )

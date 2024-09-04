@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
-
-from src.utils.general_utils import hash_pass
+import io
+from src.utils.general_utils import hash_pass, int_input
 
 
 class Test_general_utils(unittest.TestCase):
@@ -66,9 +66,19 @@ class Test_general_utils(unittest.TestCase):
             (2, 3, "devs"),
         ]
         self.relations_to_pupulate = [{"reports_to": 3, "empId": 7}]
+    
+    @patch("builtins.print")
+    @patch("builtins.input", lambda _:"should not work")
+    def test_int_input(self,mock_stdout):
+        int_input("test")
+        mock_stdout.assert_called_with("test")
+        mock_stdout.assert_called_with("Invalid input try again")
 
-    def test_int_input(self):
-        pass
+    @patch("builtins.input", return_value = "123")
+    def test_int_input_2(self,mock_input):
+        returned = int_input("test")
+        mock_input.assert_any_call("test")
+        assert returned == 123        
 
     def test_take_address_input(self):
         pass

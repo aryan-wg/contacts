@@ -9,7 +9,7 @@ import re
 def int_input(message):
     while True:
         input_num = input(message)
-        print(input_num.isdigit())
+        # print(input_num.isdigit())
         if input_num.isdigit():
             return int(input_num)
         else:
@@ -21,23 +21,22 @@ def take_address_input():
 
     address_dict["street"] = input("Enter street : ")
 
-    address_dict["postal_code"] = int_input(
-        "Enter postal code (must be a 6 digit integer) : "
-    )
-    # while True:
-    #     address_dict["postal_code"] = int_input("Enter postal code (must be a 6 digit integer) : "))
-    #
-    #     if validate_pin_code(address_dict["postal_code"]):
-    #         break
-    #     else:
-    #         print("Enter a valid pin code \n")
+    # address_dict["postal_code"] = int_input(
+    #     "Enter postal code (must be a 6 digit integer) : "
+    # )
+    while True:
+        address_dict["postal_code"] = int_input("Enter postal code (must be a 6 digit integer) : ")
+
+        if validate_pin_code(address_dict["postal_code"]):
+            break
+        else:
+            print("Enter a valid pin code \n")
 
     address_dict["city"] = input("Enter city : ")
     address_dict["state"] = input("Enter state : ")
     address_dict["country"] = input("Enter country : ")
     address_str = json.dumps(address_dict)
     return address_str
-
 
 def validate_email(email):
     return re.fullmatch(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", email)

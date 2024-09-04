@@ -49,7 +49,4 @@ class Hr_employee(Worker):
         print(f"request with {requestId} id is rejected with remark {remark}")
         raise NotImplementedError("Database setup for reject request is not implemented yet")
 
-    def save(self):
-        print("Saving the hr employee info to db")
-
 # print("hr_employee.py")

@@ -5,21 +5,24 @@ import bcrypt
 import json
 import re
 
+
 def int_input(message):
     while True:
         input_num = input(message)
         print(input_num.isdigit())
         if input_num.isdigit():
             return int(input_num)
-        else :
+        else:
             print("Invalid input try again")
+
 
 def take_address_input():
     address_dict = {}
 
     address_dict["street"] = input("Enter street : ")
 
-    address_dict["postal_code"] = int_input("Enter postal code (must be a 6 digit integer) : "
+    address_dict["postal_code"] = int_input(
+        "Enter postal code (must be a 6 digit integer) : "
     )
     # while True:
     #     address_dict["postal_code"] = int_input("Enter postal code (must be a 6 digit integer) : "))
@@ -55,15 +58,14 @@ def validate_password(password):
 
 
 def hash_pass(password):
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(12))
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(12)).decode("utf-8")
+
 
 def check_pass(password, hashed_db):
     return bcrypt.checkpw(password.encode(), hashed_db.encode())
 
 
 def make_printable(keys, original_data):
-    # print("original",type(original_data[0]))
-    # print("keys",keys)
     printable_data = []
     for item in original_data:
         printable_item = []
@@ -75,7 +77,7 @@ def make_printable(keys, original_data):
 
 
 def parse_requests(requests):
-    # print(requests)
+    print(requests)
     requests_parsed = []
     for request in requests:
         temp = {
@@ -130,21 +132,20 @@ def parse_relations(relations):
 def populate_relations(relations):
     populated = []
     for relation in relations:
-        print(relation)
         if relation["reports_to"] == 0:
             reports_to = {
-                "name": None, 
-                "empId":None,
+                "name": None,
+                "empId": None,
                 "email": None,
                 "phone": None,
             }
             relation["reports_to"] = reports_to
 
-        else: 
+        else:
             reports_to_info = read_fields_from_record(
                 "employees", "name, email, phone", "empId", [relation["reports_to"]]
             )
-            if reports_to_info :
+            if reports_to_info:
                 reports_to = {
                     "name": reports_to_info[0][0],
                     "empId": relation["reports_to"],

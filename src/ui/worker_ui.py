@@ -1,4 +1,3 @@
-from typing import is_typeddict
 from tabulate import tabulate
 from ..utils.general_utils import int_input, make_printable, take_address_input
 from .employee_interface import EmployeeInterface

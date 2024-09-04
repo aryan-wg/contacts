@@ -6,7 +6,10 @@ from pprint import pprint
 
 class Worker(Employee):
     def __init__(self, employee_info):
-        super().__init__((*employee_info,"worker"))
+        if len(employee_info)==5:
+            super().__init__((*employee_info,"worker"))
+        elif len(employee_info)==6:
+            super().__init__(employee_info)
 
     def reports_to(self,empId):
         data = read_fields_from_record("relations","*","employee",[empId]) 

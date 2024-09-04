@@ -27,8 +27,8 @@ def create_tables():
         """CREATE TABLE IF NOT EXISTS relations(
 
             reports_to integer,
-            employee integer, 
-            team text)""",
+            employee integer 
+            )""",
         """CREATE TABLE IF NOT EXISTS requests(
 
             request_id integer primary key AUTOINCREMENT,
@@ -69,10 +69,10 @@ sample_data = [
     f"INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (1,'{string}',2,1724941498,0,'approved_by_hr')",
     f"INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (2,'{string}',2,1724921498,0,'hr_not_assigned')",
     f"INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (3,'{string}',2,1724951498,0,'rejected')",
-    "INSERT INTO relations (reports_to , employee , team ) VALUES (0,1,'devs')",
-    "INSERT INTO relations (reports_to , employee , team ) VALUES (1,2,'devs')",
-    "INSERT INTO relations (reports_to , employee , team ) VALUES (1,3,'devs')",
-    "INSERT INTO relations (reports_to , employee , team ) VALUES (2,3,'devs')",
+    "INSERT INTO relations (reports_to , employee ) VALUES (0,1)",
+    "INSERT INTO relations (reports_to , employee ) VALUES (1,2)",
+    "INSERT INTO relations (reports_to , employee ) VALUES (1,3)",
+    "INSERT INTO relations (reports_to , employee ) VALUES (2,3)",
 ]
 
 

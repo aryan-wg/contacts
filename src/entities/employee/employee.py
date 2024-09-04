@@ -9,7 +9,6 @@ import random
 class Employee(ABC):
     def __init__(self, employee_info):
         empId,name, phone, email, json_str_address,user_type = employee_info 
-        # print(json_str_address)
         self.name = name
         self.phone = phone
         self.email = email

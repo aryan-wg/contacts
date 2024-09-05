@@ -47,7 +47,7 @@ class TestAdmin(unittest.TestCase):
                     "remark": None,
                     "request_id": 1,
                     "request_status": "approved_by_hr",
-                    "update_commited_at": 0,
+                    "update_committed_at": 0,
                     "updated_info": '{"name": "Akamboj", "phone": 12394823790, "email": '
                     '"aryan@wg.com", "address": {"city": "noida", "street": "dl '
                     'rd", "state": "uttar pradesh", "postal_code": 206301, '
@@ -63,7 +63,7 @@ class TestAdmin(unittest.TestCase):
                 "remark": None,
                 "request_id": 1,
                 "request_status": "approved_by_hr",
-                "update_commited_at": 0,
+                "update_committed_at": 0,
                 "updated_info": '{"name": "Akamboj", "phone": 12394823790, "email": '
                 '"aryan@wg.com", "address": {"city": "noida", "street": "dl '
                 'rd", "state": "uttar pradesh", "postal_code": 206301, '
@@ -79,7 +79,7 @@ class TestAdmin(unittest.TestCase):
                 "assigned_hr": "shruti",
                 "remark": None,
                 "created_at": "2024-08-29 19:54:58",
-                "update_commited_at": 0,
+                "update_committed_at": 0,
                 "request_status": "approved_by_hr",
             }
         ]
@@ -108,7 +108,7 @@ class TestAdmin(unittest.TestCase):
                     None,
                     1724941498,
                     1724942498,
-                    "commited",
+                    "committed",
                 )
             ],
         )
@@ -120,8 +120,8 @@ class TestAdmin(unittest.TestCase):
                     "created_by": 1,
                     "remark": "test_remark",
                     "request_id": 1,
-                    "request_status": "commited",
-                    "update_commited_at": 1724942498,
+                    "request_status": "committed",
+                    "update_committed_at": 1724942498,
                     "updated_info": '{"name": "Akamboj", "phone": 12394823790, "email": '
                     '"aryan@wg.com", "address": {"city": "noida", "street": "dl '
                     'rd", "state": "uttar pradesh", "postal_code": 206301, '
@@ -136,8 +136,8 @@ class TestAdmin(unittest.TestCase):
                 "created_by": "Aryan",
                 "remark": "test_remark",
                 "request_id": 1,
-                "request_status": "commited",
-                "update_commited_at": "2024-08-29 20:11:38",
+                "request_status": "committed",
+                "update_committed_at": "2024-08-29 20:11:38",
                 "updated_info": '{"name": "Akamboj", "phone": 12394823790, "email": '
                 '"aryan@wg.com", "address": {"city": "noida", "street": "dl '
                 'rd", "state": "uttar pradesh", "postal_code": 206301, '
@@ -153,8 +153,8 @@ class TestAdmin(unittest.TestCase):
                 "assigned_hr": "shruti",
                 "remark": "test_remark",
                 "created_at": "2024-08-29 19:54:58",
-                "update_commited_at": "2024-08-29 20:11:38",
-                "request_status": "commited",
+                "update_committed_at": "2024-08-29 20:11:38",
+                "request_status": "committed",
             }
         ]
 

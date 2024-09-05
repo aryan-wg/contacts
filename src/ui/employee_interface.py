@@ -38,26 +38,26 @@ class EmployeeInterface:
             "\nTo request for a change in information press 1, to go back press 0 : "
         )
         if op == 0:
-            self.show_menue()
+            self.show_menu()
         elif op == 1:
             self.update_info_ui()
-            # keys = ["request_id","created_by","assigned_hr","update_commited_at","created_at"]
+            # keys = ["request_id","created_by","assigned_hr","update_committed_at","created_at"]
 
     def update_password_ui(self):
         old_pass = maskpass.askpass("Enter your current password : ")
         new_pass = maskpass.askpass(""" Enter new password -
                                 **password must have -
-            8 Characters, 1 Upparcase character, 1 Lowercase character, 1 Number, 1 Special character
+            8 Characters, 1 Uppercase character, 1 Lowercase character, 1 Number, 1 Special character
                                 """)
         if validate_password(new_pass):
             if self.employee.update_password(old_pass, new_pass):
                 if True:
-                    print("Password updated succesfully \n")
+                    print("Password updated successfully \n")
             else:
                 print("Password could not be updated \n")
         else:
             print("Invalid new password")
-        self.show_menue()
+        self.show_menu()
 
     def update_info_ui(self):
         worker_dict = {}
@@ -98,8 +98,8 @@ class EmployeeInterface:
         search_result = self.employee.search_other_employee(name)
         if not len(search_result):
             print("No such users found ")
-            self.show_menue()
+            self.show_()
         else:
             headers = ["Emp Id", "Name", "Phone No", "Email"]
             print(tabulate(search_result, headers))
-            self.show_menue()
+            self.show_()

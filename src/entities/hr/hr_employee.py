@@ -24,8 +24,8 @@ class Hr_employee(Worker):
         return data
 
     def get_closed_requests(self):
-        # all of the requests that have a status == commited or rejected and assigned_hr = self.empId are closed requests 
-        data = read_by_multiple_att_and_keys("requests","*",["request_status","assigned_hr"],[["commited","rejected","approved_by_hr"],self.empId])
+        # all of the requests that have a status == committed or rejected and assigned_hr = self.empId are closed requests 
+        data = read_by_multiple_att_and_keys("requests","*",["request_status","assigned_hr"],[["committed","rejected","approved_by_hr"],self.empId])
         if data:
             data = parse_requests(data)
             data = populate_requests(data)
@@ -41,7 +41,7 @@ class Hr_employee(Worker):
         request["remark"] = remark        
         request["request_status"] = "approved_by_hr" if status == "approve" else "rejected"    
         
-        # update the request status to commited and add commit time 
+        # update the request status to committed and add commit time 
         update_one_record("requests",request,"request_id",req_id)
         return True
 

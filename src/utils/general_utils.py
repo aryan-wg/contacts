@@ -94,7 +94,7 @@ def parse_requests(requests):
             "assigned_hr": request[3],
             "remark": request[4],
             "created_at": request[5],
-            "update_commited_at": request[6],
+            "update_committed_at": request[6],
             "request_status": request[7],
         }
         requests_parsed.append(temp)
@@ -107,9 +107,9 @@ def populate_requests(requests):
     for request in requests:
         time_stamp = datetime.fromtimestamp(request["created_at"])
         request["created_at"] = time_stamp.strftime("%Y-%m-%d %H:%M:%S")
-        if not request["update_commited_at"] == 0:
-            time_stamp = datetime.fromtimestamp(request["update_commited_at"])
-            request["update_commited_at"] = time_stamp.strftime("%Y-%m-%d %H:%M:%S")
+        if not request["update_committed_at"] == 0:
+            time_stamp = datetime.fromtimestamp(request["update_committed_at"])
+            request["update_committed_at"] = time_stamp.strftime("%Y-%m-%d %H:%M:%S")
         record = read_fields_from_record(
             "employees",
             "name",

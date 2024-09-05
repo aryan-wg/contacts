@@ -34,18 +34,18 @@ class Admin(Employee):
         return data
 
     def get_closed_req(self):
-        # for a request to be closed it should have req_status == commited or rejected
+        # for a request to be closed it should have req_status == committed or rejected
         data = read_fields_from_record(
-            "requests", "*", "request_status", ["commited", "rejected"]
+            "requests", "*", "request_status", ["committed", "rejected"]
         )
-        # print("somethin")
+        # print("something")
         if data:
             data = parse_requests(data)
             data = populate_requests(data)
         return data
 
     def commit_request(self, req_id):
-        # get requst information
+        # get request information
         request = read_fields_from_record("requests", "*", "request_id", [req_id])
         request = parse_requests(request)
         request = request[0]
@@ -59,9 +59,9 @@ class Admin(Employee):
         # update the employee record
         update_one_record("employees", updated_info, "empId", request["created_by"])
 
-        # update the request status to commited and add commit time
-        request["update_commited_at"] = ceil(time.time())
-        request["request_status"] = "commited"
+        # update the request status to committed and add commit time
+        request["update_committed_at"] = ceil(time.time())
+        request["request_status"] = "committed"
         # print(request)
         update_one_record("requests", request, "request_id", req_id)
         return True
@@ -73,7 +73,7 @@ class Admin(Employee):
 
     def create_new_relation(self, emp_id, reports_to_emp_id):
         check = check_if_exists_in_db("employees", "empId", reports_to_emp_id)
-        # print("hellow",check)
+        # print("hello",check)
         if not check:
             return "Reporting to employee does not exist"
         else:

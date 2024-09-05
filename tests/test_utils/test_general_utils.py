@@ -16,7 +16,7 @@ class Test_general_utils(unittest.TestCase):
             "request_id",
             "created_by",
             "assigned_hr",
-            "update_commited_at",
+            "update_committed_at",
             "created_at",
         ]
         self.data_for_printable = [
@@ -27,7 +27,7 @@ class Test_general_utils(unittest.TestCase):
                 "assigned_hr": "shruti",
                 "remark": None,
                 "created_at": "2024-08-29 22:41:38",
-                "update_commited_at": 0,
+                "update_committed_at": 0,
                 "request_status": "rejected",
             }
         ]
@@ -51,7 +51,7 @@ class Test_general_utils(unittest.TestCase):
                 "assigned_hr": 2,
                 "remark": None,
                 "created_at": 1724941498,
-                "update_commited_at": 0,
+                "update_committed_at": 0,
                 "request_status": "approved_by_hr",
             }
         ]
@@ -65,7 +65,7 @@ class Test_general_utils(unittest.TestCase):
             (1, 3, "devs"),
             (2, 3, "devs"),
         ]
-        self.relations_to_pupulate = [{"reports_to": 3, "empId": 7}]
+        self.relations_to_populate = [{"reports_to": 3, "empId": 7}]
     
     @patch("builtins.print")
     @patch("builtins.input", lambda _:"should not work")

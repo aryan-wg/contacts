@@ -3,7 +3,7 @@ from unittest.mock import patch,Mock
 
 from src.entities.worker.worker import Worker
 
-class TestWroker(unittest.TestCase):
+class TestWorker(unittest.TestCase):
     def setUp(self) -> None:
         empId = 1
         name = "test case"

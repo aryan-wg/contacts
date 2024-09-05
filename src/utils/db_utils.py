@@ -5,7 +5,7 @@ from pprint import pprint
 
 tables_insert_map = {
     "employees": "INSERT INTO employees (name,phone,email,address,password,user_type) VALUES (:name,:phone,:email,:address,:password,:user_type) RETURNING *",
-    "requests": "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_commited_at,request_status) VALUES (:created_by,:updated_info,:assigned_hr,:created_at,:update_commited_at,:request_status) RETURNING *",
+    "requests": "INSERT INTO requests (created_by,updated_info,assigned_hr,created_at,update_committed_at,request_status) VALUES (:created_by,:updated_info,:assigned_hr,:created_at,:update_committed_at,:request_status) RETURNING *",
     "relations": "INSERT INTO relations (employee , reports_to ) VALUES (:employee,:reports_to) RETURNING *",
 }
 cur = get_cursor()
@@ -26,8 +26,8 @@ def read_fields_from_record(table, fields, key_type, keys):
             cur.execute(f"select {fields} from {table} where {key_type}='{key}'")
         else:
             cur.execute(f"select {fields} from {table} where {key_type} = {key}")
-        recived = cur.fetchall()
-        for data_item in recived:
+        received = cur.fetchall()
+        for data_item in received:
             data.append(data_item)
     if len(data) >= 1:
         return data

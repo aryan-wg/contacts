@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 from src.entities.worker.worker import Worker
 
 
-# employee class is an abstract class derived class instance neede to test it using worker
+# employee class is an abstract class derived class instance needed to test it using worker
 class test_employee(unittest.TestCase):
     def setUp(self) -> None:
         empId = 1

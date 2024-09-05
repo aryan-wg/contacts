@@ -15,15 +15,15 @@ class Admin_interface(EmployeeInterface):
         super().__init__(admin)
         self.admin = admin
 
-    def show_menue(self):
+    def show_menu(self):
         while True:
             op = int_input(f"""
             Welcome {self.employee.name} .....
                 Press the number in front of the option to perform an action :-
                   1 : Open pending requests
                   2 : Create a new employee 
-                  3 : Show all commited requests
-                  4 : Search for empoloyees 
+                  3 : Show all committed requests
+                  4 : Search for employees 
                   5 : Show my profile
                   6 : Update password
                   7 : Exit  
@@ -33,10 +33,10 @@ class Admin_interface(EmployeeInterface):
             elif op == 2:
                 self.create_employee_form()
             elif op == 3:
-                self.show_all_commited()
+                self.show_all_committed()
             elif op == 4:
                 self.search_other_employee()
-                self.show_menue()
+                self.show_menu()
             elif op == 5:
                 self.see_my_profile()
             elif op == 6:
@@ -44,13 +44,13 @@ class Admin_interface(EmployeeInterface):
             elif op == 7:
                 exit()
 
-    def show_all_commited(self):
+    def show_all_committed(self):
         requests = self.admin.get_closed_req()
         keys = [
             "request_id",
             "created_by",
             "assigned_hr",
-            "update_commited_at",
+            "update_committed_at",
             "created_at",
         ]
         if requests:
@@ -62,13 +62,13 @@ class Admin_interface(EmployeeInterface):
                         "Request Id",
                         "Created By",
                         "Assigned HR",
-                        "Commited At",
+                        "Committed At",
                         "Created At",
                     ],
                 )
             )
         else:
-            print("No reques commited yet")
+            print("No request committed yet")
 
     def open_pending_requests(self):
         requests = self.admin.get_pending_req()
@@ -79,7 +79,7 @@ class Admin_interface(EmployeeInterface):
                 "request_id",
                 "created_by",
                 "assigned_hr",
-                "update_commited_at",
+                "update_committed_at",
                 "created_at",
             ]
             printable_requests = make_printable(keys, requests)
@@ -90,7 +90,7 @@ class Admin_interface(EmployeeInterface):
                         "Request Id",
                         "Created By",
                         "Assigned HR",
-                        "Commited At",
+                        "committed At",
                         "Created At",
                     ],
                 )
@@ -98,18 +98,18 @@ class Admin_interface(EmployeeInterface):
 
             pending_req_ids = [req[0] for req in printable_requests]
             req_id = int_input("""To commit a request please enter the request id and hit enter
-            *If you want to got to preivious menue press 0 
+            *If you want to got to previous menu press 0 
             """)
             if req_id in pending_req_ids:
                 self.admin.commit_request(req_id)
             elif req_id == 0:
-                # can also change this to go to prev menue in future
-                self.show_menue()
+                # can also change this to go to prev menu in future
+                self.show_menu()
             else:
                 print("Request not found please try again")
 
     def create_employee_form(self):
-        print("-----------------Creatting a new employee-----------------")
+        print("-----------------Creating a new employee-----------------")
         user_type_input = int_input(
             "Enter press 1 to create worker and 0 to create HR employee : "
         )
@@ -169,7 +169,7 @@ class Admin_interface(EmployeeInterface):
         new_emp_name = created_worker[-1]
 
         print(
-            f"New {new_emp_name} employee created with employee id {new_emp_id} (please take note of employee id as it is requeired for login)\n"
+            f"New {new_emp_name} employee created with employee id {new_emp_id} (please take note of employee id as it is required for login)\n"
         )
         reports_to = int_input(
             f"Enter the employee id of the person who {worker_dict["name"]} reports to : "

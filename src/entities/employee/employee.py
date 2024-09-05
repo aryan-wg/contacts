@@ -59,7 +59,7 @@ class Employee(ABC):
             return False
 
     def request_self_info_change(self, updated_info):
-        # created_by integer NOT NULL, updated_info text NOT NULL, hr_assigned integer, approved_by_hr integer NOT NULL, remark text, created_at integer NOT NULL, update_commited integer NOT NULL
+        # created_by integer NOT NULL, updated_info text NOT NULL, hr_assigned integer, approved_by_hr integer NOT NULL, remark text, created_at integer NOT NULL, update_committed integer NOT NULL
         all_hr = read_fields_from_record("employees", "empId", "user_type", ["hr"])
         all_hr = [tuple_emp_id[0] for tuple_emp_id in all_hr]
         # print(all_hr)
@@ -68,7 +68,7 @@ class Employee(ABC):
             "updated_info": updated_info,
             "assigned_hr": random.choice(all_hr),
             "created_at": ceil(time.time()),
-            "update_commited_at": 0,
+            "update_committed_at": 0,
             "request_status": "hr_assigned",
             "remark": None,
         }

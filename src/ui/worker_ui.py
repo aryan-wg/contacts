@@ -10,7 +10,7 @@ class Worker_interface(EmployeeInterface):
         super().__init__(worker)
         self.worker = worker
 
-    def show_menue(self):
+    def show_menu(self):
         op = int_input(f"""
         Welcome {self.employee.name} .....
             Press the number in front of the option to perform an action :-
@@ -22,12 +22,12 @@ class Worker_interface(EmployeeInterface):
               """)
         if op == 1:
             self.see_my_profile()
-            self.show_menue()
+            self.show_menu()
         elif op == 2:
             self.search_other_employee()
         elif op == 3:
             self.see_own_team_ui(self.employee.empId)
-            self.show_menue()
+            self.show_menu()
         elif op == 4:
             self.update_password_ui()
         elif op == 5:
@@ -38,8 +38,8 @@ class Worker_interface(EmployeeInterface):
             """
             Press the number in front of the option to perform an action :-
                 1 : See people up in hierarchy 
-                2 : See pople lower in heirarchy 
-                0 : go to previous menue 
+                2 : See people lower in hierarchy 
+                0 : go to previous menu 
                 """
         )
         if op == 1:
@@ -47,7 +47,7 @@ class Worker_interface(EmployeeInterface):
         elif op == 2:
             self.reported_by_ui(empId)
         elif op == 0:
-            self.show_menue()
+            self.show_menu()
 
     def reports_to_ui(self, empId):
         reports_to = self.worker.reports_to(empId)
@@ -104,7 +104,7 @@ class Worker_interface(EmployeeInterface):
                         self.see_own_team_ui(input_empId)
                         break
                 else:
-                    print("Invalid employee id enterd ")
+                    print("Invalid employee id entered ")
                     self.see_own_team_ui(empId)
         elif op == 0:
             self.see_own_team_ui(empId)

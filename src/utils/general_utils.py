@@ -25,7 +25,9 @@ def take_address_input():
     #     "Enter postal code (must be a 6 digit integer) : "
     # )
     while True:
-        address_dict["postal_code"] = int_input("Enter postal code (must be a 6 digit integer) : ")
+        address_dict["postal_code"] = int_input(
+            "Enter postal code (must be a 6 digit integer) : "
+        )
 
         if validate_pin_code(address_dict["postal_code"]):
             break
@@ -38,8 +40,11 @@ def take_address_input():
     address_str = json.dumps(address_dict)
     return address_str
 
+
 def validate_email(email):
-    return re.fullmatch(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", email)
+    return re.fullmatch(
+        r"^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b$", email
+    )
 
 
 def validate_phone(phone):
@@ -49,11 +54,14 @@ def validate_phone(phone):
 
 def validate_pin_code(pin):
     pin_str = str(pin)
-    return re.fullmatch(r"^d{6}$", pin_str)
+    return re.fullmatch(r"^\d{6}$", pin_str)
 
 
 def validate_password(password):
-    return re.search(r"^(?=.*[A-Z](?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$", password)
+    pattern = r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$"
+    match = re.match(pattern, password)
+
+    return bool(match)
 
 
 def hash_pass(password):
@@ -76,7 +84,7 @@ def make_printable(keys, original_data):
 
 
 def parse_requests(requests):
-    print(requests)
+    # print(requests)
     requests_parsed = []
     for request in requests:
         temp = {

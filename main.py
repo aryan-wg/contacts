@@ -7,13 +7,14 @@ from src.utils.general_utils import populate_relations
 
 from pprint import pprint
 
+
 def main():
     create_tables()
     # insert_sample_data()
 
     # def test():
-        # relations = [{"reports_to":1,"employee":5},{"reports_to":3,"employee":7},]
-        # pprint(populate_relations(relations))
+    # relations = [{"reports_to":1,"employee":5},{"reports_to":3,"employee":7},]
+    # pprint(populate_relations(relations))
 
     active_auth_ui = Auth_interface()
     user_obj = active_auth_ui.login()
@@ -26,6 +27,7 @@ def main():
         active_user_ui = Hr_interface(user_obj)
 
     active_user_ui.show_menue()
+
 
 if __name__ == "__main__":
     main()

@@ -1,18 +1,19 @@
 from ..employee.employee import Employee
 from ...utils.db_utils import read_fields_from_record
-from ...utils.general_utils import parse_relations,populate_relations
+from ...utils.general_utils import parse_relations, populate_relations
 
 from pprint import pprint
 
+
 class Worker(Employee):
     def __init__(self, employee_info):
-        if len(employee_info)==5:
-            super().__init__((*employee_info,"worker"))
-        elif len(employee_info)==6:
+        if len(employee_info) == 5:
+            super().__init__((*employee_info, "worker"))
+        elif len(employee_info) == 6:
             super().__init__(employee_info)
 
-    def reports_to(self,empId):
-        data = read_fields_from_record("relations","*","employee",[empId]) 
+    def reports_to(self, empId):
+        data = read_fields_from_record("relations", "*", "employee", [empId])
         if data:
             data = parse_relations(data)
             data = populate_relations(data)
@@ -20,8 +21,8 @@ class Worker(Employee):
         else:
             return None
 
-    def reported_by(self,empId):
-        data = read_fields_from_record("relations","*","reports_to",[empId]) 
+    def reported_by(self, empId):
+        data = read_fields_from_record("relations", "*", "reports_to", [empId])
         if data:
             data = parse_relations(data)
             data = populate_relations(data)

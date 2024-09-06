@@ -32,7 +32,7 @@ def read_fields_from_record(table, fields, key_type, keys):
     if len(data) >= 1:
         return data
     else:
-        return None
+        return []
 
 
 def check_if_exists_in_db(table, key_type, key):

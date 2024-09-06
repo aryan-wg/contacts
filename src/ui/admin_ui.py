@@ -1,167 +1,111 @@
-from ..ui.employee_interface import EmployeeInterface
-from ..utils.general_utils import (
+from ..ui.employee_ui import EmployeeUi
+from ..utils.validations_utils import (
     validate_email,
     validate_phone,
-    make_printable,
-    take_address_input,
+    validate_password,
     int_input,
 )
+from ..utils.general_utils import (
+    format_for_display,
+    get_address_input
+    )
+from ..constants import requests_formatting_kyes_admin,tabulate_requests_headers_admin
+
 from tabulate import tabulate
 import json
 
 
-class Admin_interface(EmployeeInterface):
+class AdminUi(EmployeeUi):
     def __init__(self, admin):
         super().__init__(admin)
         self.admin = admin
 
     def show_menu(self):
         while True:
-            op = int_input(f"""
-            Welcome {self.employee.name} .....
-                Press the number in front of the option to perform an action :-
-                  1 : Open pending requests
-                  2 : Create a new employee 
-                  3 : Show all committed requests
-                  4 : Search for employees 
-                  5 : Show my profile
-                  6 : Update password
-                  7 : Exit  
-                  """)
-            if op == 1:
-                self.open_pending_requests()
-            elif op == 2:
-                self.create_employee_form()
-            elif op == 3:
-                self.show_all_committed()
-            elif op == 4:
-                self.search_other_employee()
-                self.show_menu()
-            elif op == 5:
-                self.see_my_profile()
-            elif op == 6:
-                self.update_password_ui()
-            elif op == 7:
-                exit()
+            selected = int_input(
+f"""
+----------------------------------------------------------------------------------------------
+Welcome {self.employee.name} .....
+    Press the number in front of option to perform an action :-
+      1 : Open pending requests
+      2 : Create a new employee 
+      3 : Show all committed requests
+      4 : Search for employees 
+      5 : Show my profile
+      6 : Update password
+      7 : Exit  
+----------------------------------------------------------------------------------------------
+"""             )
+            match selected:
+                case 1:
+                    self.open_pending_requests()
+                case 2:
+                    self.create_employee_form()
+                case 3:
+                    self.show_all_committed()
+                case 4:
+                    self.search_other_employee()
+                case 5:
+                    self.see_my_profile()
+                case 6:
+                    self.update_password_ui()
+                case 7:
+                    exit()
 
     def show_all_committed(self):
         requests = self.admin.get_closed_req()
-        keys = [
-            "request_id",
-            "created_by",
-            "assigned_hr",
-            "update_committed_at",
-            "created_at",
-        ]
         if requests:
-            printable_requests = make_printable(keys, requests)
+            printable_requests = format_for_display(requests_formatting_kyes_admin, requests)
             print(
                 tabulate(
                     printable_requests,
-                    headers=[
-                        "Request Id",
-                        "Created By",
-                        "Assigned HR",
-                        "Committed At",
-                        "Created At",
-                    ],
+                    tabulate_requests_headers_admin 
                 )
             )
         else:
-            print("No request committed yet")
+            print("\nNo request committed yet\n")
 
     def open_pending_requests(self):
         requests = self.admin.get_pending_req()
         if not requests:
-            print("There are no pending requests")
+            print("\nThere are no pending requests\n")
         else:
-            keys = [
-                "request_id",
-                "created_by",
-                "assigned_hr",
-                "update_committed_at",
-                "created_at",
-            ]
-            printable_requests = make_printable(keys, requests)
+            formatted_requests = format_for_display(requests_formatting_kyes_admin, requests)
             print(
                 tabulate(
-                    printable_requests,
-                    headers=[
-                        "Request Id",
-                        "Created By",
-                        "Assigned HR",
-                        "committed At",
-                        "Created At",
-                    ],
+                    formatted_requests,
+                    tabulate_requests_headers_admin
                 )
             )
 
-            pending_req_ids = [req[0] for req in printable_requests]
-            req_id = int_input("""To commit a request please enter the request id and hit enter
-            *If you want to got to previous menu press 0 
+            pending_req_ids = [req[0] for req in formatted_requests]
+            req_id = int_input("""\nTo commit a request please enter the request id and hit enter
+            *If you want to got to previous menu press 0
             """)
             if req_id in pending_req_ids:
                 self.admin.commit_request(req_id)
             elif req_id == 0:
-                # can also change this to go to prev menu in future
-                self.show_menu()
+                return 
             else:
-                print("Request not found please try again")
+                print("\nRequest not found please try again\n")
 
     def create_employee_form(self):
-        print("-----------------Creating a new employee-----------------")
+        print("--------------------------------Creating a new employee--------------------------------")
         user_type_input = int_input(
-            "Enter press 1 to create worker and 0 to create HR employee : "
+"""
+1 : Create a Worker type employee
+2 : Create a HR type employee
+0 : To get back to previous menu
+"""
         )
         worker_dict = {}
-        while True:
-            if user_type_input == 0:
-                worker_dict["user_type"] = "hr"
-                break
-            elif user_type_input == 1:
-                worker_dict["user_type"] = "worker"
-                break
-            else:
-                print("Enter a valid input ")
-
+        
+        worker_dict = self.__user_type_input(worker_dict)
+        worker_dict = self.__phone_input(worker_dict)
         worker_dict["name"] = input(f"Enter {worker_dict["user_type"]}'s name : ")
-
-        # worker_dict["phone"] = int_input(f"Enter {worker_dict["user_type"]}'s phone number : ")
-        while True:
-            worker_dict["phone"] = input(
-                f"Enter {worker_dict["user_type"]}'s phone number : "
-            )
-            if worker_dict["phone"].isdigit():
-                if validate_phone(worker_dict["phone"]):
-                    break
-                else:
-                    print("Enter a valid phone number")
-            else:
-                print("Enter a valid phone number")
-
-        # worker_dict["email"]  = input(f"Enter {worker_dict["user_type"]}'s email address : ")
-        while True:
-            worker_dict["email"] = input(
-                f"Enter {worker_dict["user_type"]}'s email address : "
-            )
-
-            if validate_email(worker_dict["email"]):
-                break
-            else:
-                print("Enter a valid email")
-
-        worker_dict["address"] = json.dumps(take_address_input())
-
-        worker_dict["password"] = input(
-            f"Enter {worker_dict["user_type"]}'s initial password \n(must be 8 char long and contain 1 digit, 1 lowercase, 1 uppercase, 1 special character) : "
-        )
-        # while True:
-        #     worker_dict["password"] = input(f"Enter {worker_dict["user_type"]}'s initial password \n(must be 8 char long and contain 1 digit, 1 lowercase, 1 uppercase, 1 special character) : ")
-        #
-        #     if validate_password(worker_dict["password"]):
-        #         break
-        #     else:
-        #         print("Enter a valid email")
+        worker_dict = self.__email_input(worker_dict)
+        worker_dict["address"] = json.dumps(get_address_input())
+        worker_dict = self.__password_input(worker_dict)
 
         created_worker = self.admin.create_new_employee(worker_dict)
 
@@ -180,3 +124,52 @@ class Admin_interface(EmployeeInterface):
             f"Employee with id {created_relation[1]} is now reporting to {created_relation[0]}"
         )
         return True
+
+
+
+    def __user_type_input(self,worker_dict):
+        user_type_input = int_input(
+"""
+1 : Make a HR type user
+2 : Make a Worker type user
+
+"""
+        )
+        while True:
+            if user_type_input == 0:
+                worker_dict["user_type"] = "hr"
+                return worker_dict
+            elif user_type_input == 1:
+                worker_dict["user_type"] = "worker"
+                return worker_dict
+            else:
+                print("Enter a valid input ")
+
+    def __phone_input(self,worker_dict):
+        while True:
+            worker_dict["phone"] = input(
+                f"Enter {worker_dict["user_type"]}'s phone number : "
+            )
+            if validate_phone(worker_dict["phone"]):
+               return worker_dict 
+            else:
+                print("Enter a valid phone number")
+
+    def __email_input(self,worker_dict):
+        while True:
+            worker_dict["email"] = input(
+                f"Enter {worker_dict["user_type"]}'s email address : "
+            )
+            if validate_email(worker_dict["email"]):
+                return worker_dict
+            else:
+                print("Enter a valid email")
+    
+    def __password_input(self,worker_dict):
+        while True:
+            worker_dict["password"] = input(f"Enter {worker_dict["user_type"]}'s initial password \n(must be 8 char long and contain 1 digit, 1 lowercase, 1 uppercase, 1 special character) : ")
+
+            if validate_password(worker_dict["password"]):
+                return worker_dict
+            else:
+                print("Enter a valid password")

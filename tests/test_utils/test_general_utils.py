@@ -1,7 +1,7 @@
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch,call
 import io
-from src.utils.general_utils import hash_pass, int_input
+from src.utils.general_utils import hash_pass,take_address_input
 
 
 class Test_general_utils(unittest.TestCase):
@@ -9,8 +9,14 @@ class Test_general_utils(unittest.TestCase):
         self.message = "Enter an input"
         self.email = "test@test.com"
         self.phone = 934420830100
-        self.pin = 247001
         self.password = "1@tEst78"
+        self.address = {
+                "street":"test_street",
+                "postal_code":"247001",
+                "city":"test_city",
+                "state":"test_state",
+                "country":"test_country"
+        }
         self.hash = hash_pass(self.password)
         self.keys_for_printable = [
             "request_id",
@@ -66,52 +72,44 @@ class Test_general_utils(unittest.TestCase):
             (2, 3, "devs"),
         ]
         self.relations_to_populate = [{"reports_to": 3, "empId": 7}]
-    
-    @patch("builtins.print")
-    @patch("builtins.input", lambda _:"should not work")
-    def test_int_input(self,mock_stdout):
-        int_input("test")
-        mock_stdout.assert_called_with("test")
-        mock_stdout.assert_called_with("Invalid input try again")
 
-    @patch("builtins.input", return_value = "123")
-    def test_int_input_2(self,mock_input):
-        returned = int_input("test")
-        mock_input.assert_any_call("test")
-        assert returned == 123        
+        input_patcher = patch("builtins.input")
+        self.mock_input = input_patcher.start()
+        output_patcher = patch("builtins.print")
+        self.mock_print = output_patcher.start()
+
+    def test_int_input(self):
+        self.mock_input.side_effect = ['should not work','12']
+        
+        res = int_input("test")
+        assert res == 12
+        self.mock_input.assert_called_with("test")
+
+        self.mock_print.assert_called_once_with("Invalid input try again")
+
+        # expected_calls = [call("Invalid input try again")]
+        # self.mock_print.assert_has_calls(expected_calls) 
 
     def test_take_address_input(self):
-        pass
+        #arrang
+        self.mock_input.side_effect = [self.address["street"],"123",self.address["postal_code"],self.address["city"],self.address["state"],self.address["country"]]
 
-    def test_validate_email(self):
-        pass
-
-    def test_validate_phone(self):
-        pass
-
-    def test_validate_pin_code(self):
-        pass
-
-    def test_validate_password(self):
-        pass
-
-    def test_hash_pass(self):
-        pass
-
-    def test_check_pass(self):
-        pass
+        #act
+        address = take_address_input()
+            
+        #assert
+        self.mock_print.assert_called_with("Enter a valid pin code \n")
+        assert address == '{"street": "test_street", "postal_code": 247001, "city": "test_city", "state": "test_state", "country": "test_country"}' 
 
     def test_make_printable(self):
         pass
 
-    def test_parse_request(self):
-        pass
 
-    def test_populate_requests(self):
-        pass
-
-    def test_parse_relation(self):
-        pass
-
-    def test_populate_relation(self):
-        pass
+    # def test_hash_pass(self):
+    #     # output_hash = hash_pass("test_password")
+    #     #     
+    #     # assert output_hash == '$2b$12$qg0xePyBWbkkgGHEe88fk.aabBlBdXpPpbtvA7CJQSPdB1K88xlnS'
+    #     pass
+    #
+    # def test_check_pass(self):
+    #     pass

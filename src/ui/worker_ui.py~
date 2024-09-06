@@ -1,6 +1,5 @@
 from tabulate import tabulate
-from ..utils.general_utils import format_for_display, get_address_input
-from ..utils.validations_utils import int_input
+from ..utils.general_utils import int_input, format_for_display, ke_address_input
 from .employee_ui import EmployeeUi
 
 from pprint import pprint

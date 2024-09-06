@@ -1,27 +1,22 @@
 from ..employee.employee import Employee
-from ..worker.worker import Worker
-from ..hr.hr_employee import Hr_employee
 from ...utils.db_utils import (
     read_fields_from_record,
     update_one_record,
     write_to_table,
     check_if_exists_in_db,
 )
-from ...utils.general_utils import parse_requests, populate_requests, hash_pass
+from ...utils.general_utils import  hash_pass
+from ...utils.parsing_populating_utils import parse_requests, populate_requests
 
 from math import ceil
 import time
-from pprint import pprint
 
 import json
 
 
 class Admin(Employee):
     def __init__(self, employee_info):
-        # self.pending_req = self.get_pending_req()
-        # self.closed_req = self.get_closed_req()
         super().__init__((*employee_info, "admin"))
-        # print("new admin initiated", self.name)
 
     def get_pending_req(self):
         # for a request to be pending it should have req_status == approved_by_hr
@@ -38,7 +33,6 @@ class Admin(Employee):
         data = read_fields_from_record(
             "requests", "*", "request_status", ["committed", "rejected"]
         )
-        # print("something")
         if data:
             data = parse_requests(data)
             data = populate_requests(data)
@@ -62,7 +56,6 @@ class Admin(Employee):
         # update the request status to committed and add commit time
         request["update_committed_at"] = ceil(time.time())
         request["request_status"] = "committed"
-        # print(request)
         update_one_record("requests", request, "request_id", req_id)
         return True
 
@@ -73,7 +66,6 @@ class Admin(Employee):
 
     def create_new_relation(self, emp_id, reports_to_emp_id):
         check = check_if_exists_in_db("employees", "empId", reports_to_emp_id)
-        # print("hello",check)
         if not check:
             return "Reporting to employee does not exist"
         else:

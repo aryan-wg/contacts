@@ -3,7 +3,7 @@ from ..auth import Auth
 import maskpass
 
 
-class Auth_interface:
+class Auth_ui:
     def get_credentials(self):
         while True:
             empId = int_input("""Please enter your employee id : """)

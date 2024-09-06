@@ -1,6 +1,6 @@
 from ..employee.employee import Employee
 from ...utils.db_utils import read_fields_from_record
-from ...utils.general_utils import parse_relations, populate_relations
+from ...utils.parsing_populating_utils import parse_relations, populate_relations
 
 from pprint import pprint
 

@@ -3,7 +3,6 @@ from .db_utils import read_fields_from_record
 
 
 def parse_requests(requests):
-    # print(requests)
     requests_parsed = []
     for request in requests:
         temp = {
@@ -48,7 +47,6 @@ def parse_relations(relations):
         temp = {
             "reports_to": relation[0],
             "empId": relation[1],
-            "team": relation[2],
         }
         relations_parsed.append(temp)
 

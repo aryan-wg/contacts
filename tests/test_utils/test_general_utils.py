@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch,call
-import io
-from src.utils.general_utils import hash_pass,take_address_input
+
+from src.utils.general_utils import hash_pass,int_input,get_address_input
 
 
 class Test_general_utils(unittest.TestCase):
@@ -90,12 +90,12 @@ class Test_general_utils(unittest.TestCase):
         # expected_calls = [call("Invalid input try again")]
         # self.mock_print.assert_has_calls(expected_calls) 
 
-    def test_take_address_input(self):
+    def test_get_address_input(self):
         #arrang
         self.mock_input.side_effect = [self.address["street"],"123",self.address["postal_code"],self.address["city"],self.address["state"],self.address["country"]]
 
         #act
-        address = take_address_input()
+        address = get_address_input()
             
         #assert
         self.mock_print.assert_called_with("Enter a valid pin code \n")

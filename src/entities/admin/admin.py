@@ -67,7 +67,7 @@ class Admin(Employee):
     def create_new_relation(self, emp_id, reports_to_emp_id):
         check = check_if_exists_in_db("employees", "empId", reports_to_emp_id)
         if not check:
-            return "Reporting to employee does not exist"
+            return False
         else:
             new_relation = {}
             new_relation["employee"] = emp_id

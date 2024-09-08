@@ -1,7 +1,6 @@
 import unittest
 from unittest.mock import Mock, patch,call
-import io
-from src.utils.general_utils import hash_pass, take_address_input
+from src.utils.general_utils import hash_pass, get_address_input
 from src.utils.validations_utils import int_input,validate_password,validate_pin_code,validate_phone,validate_email
 
 class Test_validation_utils(unittest.TestCase):

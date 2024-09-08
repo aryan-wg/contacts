@@ -1,5 +1,6 @@
 import re
 
+
 def int_input(message):
     while True:
         input_num = input(message)
@@ -7,6 +8,7 @@ def int_input(message):
             return int(input_num)
         else:
             print("Invalid input try again")
+
 
 def validate_email(email):
     match = re.fullmatch(

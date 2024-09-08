@@ -1,5 +1,5 @@
 from tabulate import tabulate
-from ..utils.general_utils import format_for_display, get_address_input
+from ..utils.general_utils import print_relation,format_for_display, get_address_input, print_user_info_in_relation
 from ..utils.validations_utils import int_input
 from .employee_ui import EmployeeUi
 
@@ -13,99 +13,92 @@ class WorkerUi(EmployeeUi):
 
     def show_menu(self):
         selected = int_input(f"""
-        Welcome {self.employee.name} .....
-            Press the number in front of the selectedtion to perform an action :-
-              1 : See my profile 
-              2 : Search an employee
-              3 : See own team
-              4 : Update password 
-              5 : Exit
-              """)
-        if selected == 1:
-            self.see_my_profile()
-            self.show_menu()
-        elif selected == 2:
-            self.search_other_employee()
-        elif selected == 3:
-            self.see_own_team_ui(self.employee.empId)
-            self.show_menu()
-        elif selected == 4:
-            self.update_password_ui()
-        elif selected == 5:
-            exit()
+----------------------------------------------------------------------------------------------
+Welcome {self.employee.name} .....
+Press the number in front of the selectedtion to perform an action :-
+1 : See my profile 
+2 : Search an employee
+3 : See my team
+4 : Update password 
+5 : Exit
+----------------------------------------------------------------------------------------------
+""")
+        match selected:
+            case 1:
+                self.see_my_profile()
+            case 2:
+                self.search_other_employee()
+            case 3:
+                self.show_my_team(self.employee.empId)
+            case 4:
+                self.update_password_input()
+            case 5:
+                exit()
 
-    def see_own_team_ui(self, empId):
+    def show_my_team(self, empId):
         selected = int_input(
             """
-            Press the number in front of the selectedtion to perform an action :-
-                1 : See peselectedle up in hierarchy 
-                2 : See peselectedle lower in hierarchy 
-                0 : go to previous menu 
+----------------------------------------------------------------------------------------------
+Press the number in front of the selectedtion to perform an action :-
+1 : See people up in hierarchy 
+2 : See people lower in hierarchy 
+0 : go to previous menu 
+----------------------------------------------------------------------------------------------
                 """
         )
-        if selected == 1:
-            self.reports_to_ui(empId)
-        elif selected == 2:
-            self.reported_by_ui(empId)
-        elif selected == 0:
-            self.show_menu()
+        match selected:
+            case 1:
+                self.user_reports_to(empId)
+            case 2:
+                self.user_reported_by(empId)
+            case 0:
+               return  
 
-    def reports_to_ui(self, empId):
+    def user_reports_to(self, empId):
         reports_to = self.worker.reports_to(empId)
 
         if reports_to["reports_to"]["name"] is None:
             print("\nThis employee does not report to anyone \n")
-            self.see_own_team_ui(empId)
+            self.show_my_team(empId)
         else:
-            print(
-                f"\n{reports_to["employee"]["name"]} with employee id {empId} reports to {reports_to["reports_to"]["name"]} with employee Id {reports_to["reports_to"]["empId"]}"
-            )
+            print_relation(reports_to)
             selected = int_input(
                 f"\nTo see more information about {reports_to["reports_to"]["name"]} press 1\nOr 0 to continue : "
             )
             if selected == 1:
-                print(f"""
-                      Name : {reports_to["reports_to"]["name"]}
-                      Email : {reports_to["reports_to"]["email"]}
-                      Phone : {reports_to["reports_to"]["phone"]}
-                      Employee Id : {reports_to["reports_to"]["empId"]}
-                           """)
+                print_user_info_in_relation(reports_to,"reports_to")
                 print(f"Currently at user {reports_to["reports_to"]["name"]}\n")
-                self.see_own_team_ui(reports_to["reports_to"]["empId"])
+                self.show_my_team(reports_to["reports_to"]["empId"])
 
             elif selected == 0:
                 print(f"Currently at user {reports_to["reports_to"]["empId"]}\n")
-                self.see_own_team_ui(reports_to["reports_to"]["empId"])
+                self.show_my_team(reports_to["reports_to"]["empId"])
 
-    def reported_by_ui(self, empId):
+    def user_reported_by(self, empId):
         reported_by_workers = self.worker.reported_by(empId)
-        if reported_by_workers == None:
+
+        if reported_by_workers is None:
             print("\nThis employee is not reported to by anyone\n")
-            self.see_own_team_ui(empId)
+            self.show_my_team(empId)
+
         for reported_by in reported_by_workers:
-            print(
-                f"\n{reported_by["employee"]["name"]} with employee id {reported_by["employee"]["empId"]} reports to {reported_by["reports_to"]["name"]} employee with Id {reported_by["reports_to"]["empId"]}"
-            )
+            print_relation(reported_by)
+
         selected = int_input(
             "\nTo see more information about any of the employees press 1\n Or press 0 to continue : "
         )
         if selected == 1:
             while True:
                 input_empId = int_input(
-                    "Enter the employee id of the person you want more information of : "
+                    "\nEnter the employee id of the person you want more information of : "
                 )
-                for reported_by in reported_by_workers:
-                    if input_empId == reported_by["employee"]["empId"]:
-                        print(f"""
-                              Name : {reported_by["employee"]["name"]}
-                              Email : {reported_by["employee"]["email"]}
-                              Phone : {reported_by["employee"]["phone"]}
-                              Employee Id : {reported_by["employee"]["empId"]}
-                                   """)
-                        self.see_own_team_ui(input_empId)
+                for relation in reported_by_workers:
+                    if input_empId == relation["employee"]["empId"]:
+                        print_user_info_in_relation(relation,"employee")
+                        self.show_my_team(input_empId)
                         break
                 else:
                     print("Invalid employee id entered ")
-                    self.see_own_team_ui(empId)
+                    self.show_my_team(empId)
         elif selected == 0:
-            self.see_own_team_ui(empId)
+            self.show_my_team(empId)

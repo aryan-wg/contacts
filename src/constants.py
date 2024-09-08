@@ -1,4 +1,4 @@
-requests_formatting_keys_hr = [
+hr_requests_formatting_keys= [
     "request_id",
     "created_by",
     "assigned_hr",
@@ -7,7 +7,7 @@ requests_formatting_keys_hr = [
     "created_at",
 ]
 
-tabulate_requests_headers_hr = [
+hr_requests_tabulate_headers = [
     "Request Id",
     "Created By",
     "Assigned HR",
@@ -16,7 +16,7 @@ tabulate_requests_headers_hr = [
     "Created At",
 ]
 
-requests_formatting_kyes_admin = [
+admin_requests_formatting_kyes = [
     "request_id",
     "created_by",
     "assigned_hr",
@@ -24,10 +24,20 @@ requests_formatting_kyes_admin = [
     "created_at",
 ]
 
-tabulate_requests_headers_admin = [
+admin_requests_tabulate_headers = [
     "Request Id",
     "Created By",
     "Assigned HR",
     "committed At",
     "Created At",
 ]
+
+my_profile_formating_keys = ["name", "phone", "email", "empId", "address"]
+my_profile_tabulate_headers = ["Name", "Phone Number", "Email", "Employee ID", "Address"]
+
+request_info_formating_keys = ["name", "phone", "email", "address"] 
+request_info_tabulate_headers = ["Name", "Phone Number", "Email", "Address"]
+
+search_employee_tabulate_headers = ["Emp Id", "Name", "Phone No", "Email"]
+
+

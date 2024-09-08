@@ -3,8 +3,10 @@ from ..utils.general_utils import int_input, format_for_display
 
 from tabulate import tabulate
 
-from ..constants import requests_formatting_keys_hr, tabulate_requests_headers_hr
+from ..constants import hr_requests_formatting_keys,hr_requests_tabulate_headers,request_info_formating_keys,request_info_tabulate_headers 
+import json
 
+from pprint import pprint
 
 class HrUi(WorkerUi):
     def __init__(self, hr_employee):
@@ -26,35 +28,36 @@ Welcome {self.hr.name} .....
 6 : Update password 
 7 : Exit
 -----------------------------------------------------------------------------------------------
-                """)
-            if selection == 1:
-                self.show_pending_requests()
+""")
+            match selection:
+                case 1:
+                    self.show_pending_requests()
 
-            elif selection == 2:
-                self.show_closed_requests()
+                case 2:
+                    self.show_closed_requests()
 
-            elif selection == 3:
-                self.see_my_profile()
+                case 3:
+                    self.see_my_profile()
 
-            elif selection == 4:
-                self.search_other_employee()
+                case 4:
+                    self.search_other_employee()
 
-            elif selection == 5:
-                self.see_own_team_ui(self.employee.empId)
+                case 5:
+                    self.show_my_team(self.employee.empId)
 
-            elif selection == 6:
-                self.update_password_ui()
+                case 6:
+                    self.update_password_ui()
 
-            elif selection == 7:
-                exit()
+                case 7:
+                    exit()
 
     def show_pending_requests(self):
         requests = self.hr.get_pending_requests()
         if not requests:
             print("There are no pending requests.")
         else:
-            formatted_requests = format_for_display(requests_formatting_keys_hr, requests)
-            print(tabulate(formatted_requests, tabulate_requests_headers_hr))
+            formatted_requests = format_for_display(hr_requests_formatting_keys, requests)
+            print(tabulate(formatted_requests, hr_requests_tabulate_headers))
             
             pending_req_ids = [req[0] for req in formatted_requests]
             while True:
@@ -68,17 +71,18 @@ Welcome {self.hr.name} .....
 -----------------------------------------------------------------------------------------------
 """
                 )
-                if selection == 1:
-                    self.change_req_status_input("approve", pending_req_ids)
-                elif selection == 2:
-                    self.change_req_status_input("reject", pending_req_ids)
-                elif selection == 3:
-                    req_id_for_details = int_input(
-                        "Enter the request id you want to see the details of : "
-                    )
-                    print("yet to be implemented")
-                elif selection == 0:
-                    self.show_menu()
+                match selection:                
+                    case 1:
+                        self.change_req_status_input("approve", pending_req_ids)
+                    case 2:
+                        self.change_req_status_input("reject", pending_req_ids)
+                    case 3:
+                        req_details_id = int_input(
+                            "\nEnter the request id you want to see the details of : "
+                        )
+                        self.show_request_details(req_details_id)
+                    case 0:
+                        return 
 
     def change_req_status_input(self, update_type, pending_req_ids):
         req_id = int_input(f"To {update_type} a request please enter the request id and hit enter : ")
@@ -93,5 +97,25 @@ Welcome {self.hr.name} .....
         if not requests:
             print("There are no pending requests")
         else:
-            printable_requests = format_for_display(requests_formatting_keys_hr, requests)
-            print(tabulate(printable_requests, tabulate_requests_headers_hr))
+            printable_requests = format_for_display(hr_requests_formatting_keys, requests)
+            print(tabulate(printable_requests, hr_requests_tabulate_headers))
+
+    def show_request_details(self,reqId):
+        requests = self.hr.get_pending_requests()
+        for request in requests:
+            if request["request_id"] == reqId:
+                formatted_data = format_for_display(request_info_formating_keys, [json.loads(request["updated_info"])])
+                address = json.loads(formatted_data[0][-1])
+                str_address = ""
+                for key, value in address.items():
+                    str_address += f"{key} - {value} \n"
+
+                formatted_data[0][-1] = str_address
+                print("\n",
+                    tabulate(
+                        formatted_data,
+                        request_info_tabulate_headers
+                    )
+                )
+
+

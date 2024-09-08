@@ -1,17 +1,17 @@
 from ..ui.employee_ui import EmployeeUi
 from ..utils.validations_utils import (
-    validate_email,
-    validate_phone,
-    validate_password,
     int_input,
 )
+from ..utils.input_utils import phone_input,email_input,password_input
+
 from ..utils.general_utils import (
     format_for_display,
     get_address_input
     )
-from ..constants import requests_formatting_kyes_admin,tabulate_requests_headers_admin
+from ..constants import admin_requests_tabulate_headers,admin_requests_formatting_kyes
 
 from tabulate import tabulate
+
 import json
 
 
@@ -55,11 +55,11 @@ Welcome {self.employee.name} .....
     def show_all_committed(self):
         requests = self.admin.get_closed_req()
         if requests:
-            printable_requests = format_for_display(requests_formatting_kyes_admin, requests)
+            printable_requests = format_for_display(admin_requests_formatting_kyes, requests)
             print(
                 tabulate(
                     printable_requests,
-                    tabulate_requests_headers_admin 
+                    admin_requests_tabulate_headers 
                 )
             )
         else:
@@ -70,11 +70,11 @@ Welcome {self.employee.name} .....
         if not requests:
             print("\nThere are no pending requests\n")
         else:
-            formatted_requests = format_for_display(requests_formatting_kyes_admin, requests)
+            formatted_requests = format_for_display(admin_requests_formatting_kyes, requests)
             print(
                 tabulate(
                     formatted_requests,
-                    tabulate_requests_headers_admin
+                    admin_requests_tabulate_headers 
                 )
             )
 
@@ -91,41 +91,36 @@ Welcome {self.employee.name} .....
 
     def create_employee_form(self):
         print("--------------------------------Creating a new employee--------------------------------")
-        user_type_input = int_input(
-"""
-1 : Create a Worker type employee
-2 : Create a HR type employee
-0 : To get back to previous menu
-"""
-        )
         worker_dict = {}
-        
+
         worker_dict = self.__user_type_input(worker_dict)
-        worker_dict = self.__phone_input(worker_dict)
         worker_dict["name"] = input(f"Enter {worker_dict["user_type"]}'s name : ")
-        worker_dict = self.__email_input(worker_dict)
+        worker_dict = phone_input(worker_dict)
+        worker_dict = email_input(worker_dict)
         worker_dict["address"] = json.dumps(get_address_input())
-        worker_dict = self.__password_input(worker_dict)
+        worker_dict = password_input(worker_dict)
 
         created_worker = self.admin.create_new_employee(worker_dict)
 
         new_emp_id = created_worker[0]
         new_emp_name = created_worker[-1]
 
-        print(
-            f"New {new_emp_name} employee created with employee id {new_emp_id} (please take note of employee id as it is required for login)\n"
-        )
-        reports_to = int_input(
-            f"Enter the employee id of the person who {worker_dict["name"]} reports to : "
-        )
-
-        created_relation = self.admin.create_new_relation(new_emp_id, reports_to)
-        print(
-            f"Employee with id {created_relation[1]} is now reporting to {created_relation[0]}"
-        )
-        return True
-
-
+        created_relation = None
+        while not created_relation:
+            print(
+                f"New {new_emp_name} employee created with employee id {new_emp_id} (please take note of employee id as it is required for login)\n"
+            )
+            reports_to = int_input(
+                f"Enter the employee id of the person who {worker_dict["name"]} reports to : "
+            )
+            created_relation = self.admin.create_new_relation(new_emp_id, reports_to)
+            if not created_relation:
+                print("\nReporting to user does not exsist try again.\n")
+                continue
+            else :
+                print(
+                    f"Employee with id {created_relation[1]} is now reporting to {created_relation[0]}"
+                )
 
     def __user_type_input(self,worker_dict):
         user_type_input = int_input(
@@ -136,40 +131,12 @@ Welcome {self.employee.name} .....
 """
         )
         while True:
-            if user_type_input == 0:
+            if user_type_input == 1:
                 worker_dict["user_type"] = "hr"
                 return worker_dict
-            elif user_type_input == 1:
+            elif user_type_input == 2:
                 worker_dict["user_type"] = "worker"
                 return worker_dict
             else:
                 print("Enter a valid input ")
 
-    def __phone_input(self,worker_dict):
-        while True:
-            worker_dict["phone"] = input(
-                f"Enter {worker_dict["user_type"]}'s phone number : "
-            )
-            if validate_phone(worker_dict["phone"]):
-               return worker_dict 
-            else:
-                print("Enter a valid phone number")
-
-    def __email_input(self,worker_dict):
-        while True:
-            worker_dict["email"] = input(
-                f"Enter {worker_dict["user_type"]}'s email address : "
-            )
-            if validate_email(worker_dict["email"]):
-                return worker_dict
-            else:
-                print("Enter a valid email")
-    
-    def __password_input(self,worker_dict):
-        while True:
-            worker_dict["password"] = input(f"Enter {worker_dict["user_type"]}'s initial password \n(must be 8 char long and contain 1 digit, 1 lowercase, 1 uppercase, 1 special character) : ")
-
-            if validate_password(worker_dict["password"]):
-                return worker_dict
-            else:
-                print("Enter a valid password")

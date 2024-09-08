@@ -42,3 +42,17 @@ def format_for_display(keys, original_data):
         printable_data.append(printable_item)
 
     return printable_data
+
+def print_user_info_in_relation(relation,user_to_print):
+    print(f"""
+Name : {relation[user_to_print]["name"]}
+Email : {relation[user_to_print]["email"]}
+Phone : {relation[user_to_print]["phone"]}
+Employee Id : {relation[user_to_print]["empId"]}
+""")
+
+def print_relation(relation):
+        print(
+            f"\n{relation["employee"]["name"]} with employee id {relation["employee"]["empId"]} reports to {relation["reports_to"]["name"]} with employee Id {relation["reports_to"]["empId"]}\n"
+        )
+

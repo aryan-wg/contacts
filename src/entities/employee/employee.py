@@ -61,20 +61,34 @@ class Employee(ABC):
     def request_self_info_change(self, updated_info):
         # created_by integer NOT NULL, updated_info text NOT NULL, hr_assigned integer, approved_by_hr integer NOT NULL, remark text, created_at integer NOT NULL, update_committed integer NOT NULL
         all_hr = read_fields_from_record("employees", "empId", "user_type", ["hr"])
-        all_hr = [tuple_emp_id[0] for tuple_emp_id in all_hr]
-        # print(all_hr)
-        request = {
-            "created_by": self.empId,
-            "updated_info": updated_info,
-            "assigned_hr": random.choice(all_hr),
-            "created_at": ceil(time.time()),
-            "update_committed_at": 0,
-            "request_status": "hr_assigned",
-            "remark": None,
-        }
-        created_request = write_to_table("requests", request)
-        # print("updated user will be ", created_request)
-        return True
+        try :
+            all_hr = [tuple_emp_id[0] for tuple_emp_id in all_hr]
+            if not all_hr:
+                raise ValueError("No HR employee to assign request to.")
+            else:
+                assigned_hr = random.choice(all_hr) 
+                if len(all_hr) == 1:
+                    if all_hr[0] == self.empId:
+                        print("\nWarning - you are the only HR hence you will be approving your own request\n")
+                        assigned_hr = self.empId
+                else :
+                    while assigned_hr == self.empId:
+                        assigned_hr = random.choice(all_hr)
+                request = {
+                    "created_by": self.empId,
+                    "updated_info": updated_info,
+                    "assigned_hr": assigned_hr,
+                    "created_at": ceil(time.time()),
+                    "update_committed_at": 0,
+                    "request_status": "hr_assigned",
+                    "remark": None,
+                }
+                created_request = write_to_table("requests", request)
+                print("updated user will be ", created_request)
+                return True
+
+        except Exception as e:
+            print(e)
 
     @abstractmethod
     def info():

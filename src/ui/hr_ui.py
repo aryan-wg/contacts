@@ -46,11 +46,11 @@ Welcome {self.hr.name} .....
                     self.show_my_team(self.employee.empId)
 
                 case 6:
-                    self.update_password_ui()
+                    self.update_password_input()
 
                 case 7:
                     exit()
-
+            self.show_menu()
     def show_pending_requests(self):
         requests = self.hr.get_pending_requests()
         if not requests:

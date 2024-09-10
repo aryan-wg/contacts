@@ -2,13 +2,10 @@ from ..ui.employee_ui import EmployeeUi
 from ..utils.validations_utils import (
     int_input,
 )
-from ..utils.input_utils import phone_input,email_input,password_input
+from ..utils.input_utils import phone_input, email_input, password_input
 
-from ..utils.general_utils import (
-    format_for_display,
-    get_address_input
-    )
-from ..constants import admin_requests_tabulate_headers,admin_requests_formatting_kyes
+from ..utils.general_utils import format_for_display, get_address_input
+from ..constants import admin_requests_tabulate_headers, admin_requests_formatting_kyes
 
 from tabulate import tabulate
 
@@ -23,7 +20,7 @@ class AdminUi(EmployeeUi):
     def show_menu(self):
         while True:
             selected = int_input(
-f"""
+                f"""
 ----------------------------------------------------------------------------------------------
 Welcome {self.employee.name} .....
     Press the number in front of option to perform an action :-
@@ -35,7 +32,8 @@ Welcome {self.employee.name} .....
       6 : Update password
       7 : Exit  
 ----------------------------------------------------------------------------------------------
-"""             )
+"""
+            )
             match selected:
                 case 1:
                     self.open_pending_requests()
@@ -48,20 +46,17 @@ Welcome {self.employee.name} .....
                 case 5:
                     self.see_my_profile()
                 case 6:
-                    self.update_password_ui()
+                    self.update_password_input()
                 case 7:
                     exit()
 
     def show_all_committed(self):
         requests = self.admin.get_closed_req()
         if requests:
-            printable_requests = format_for_display(admin_requests_formatting_kyes, requests)
-            print(
-                tabulate(
-                    printable_requests,
-                    admin_requests_tabulate_headers 
-                )
+            printable_requests = format_for_display(
+                admin_requests_formatting_kyes, requests
             )
+            print(tabulate(printable_requests, admin_requests_tabulate_headers))
         else:
             print("\nNo request committed yet\n")
 
@@ -70,13 +65,10 @@ Welcome {self.employee.name} .....
         if not requests:
             print("\nThere are no pending requests\n")
         else:
-            formatted_requests = format_for_display(admin_requests_formatting_kyes, requests)
-            print(
-                tabulate(
-                    formatted_requests,
-                    admin_requests_tabulate_headers 
-                )
+            formatted_requests = format_for_display(
+                admin_requests_formatting_kyes, requests
             )
+            print(tabulate(formatted_requests, admin_requests_tabulate_headers))
 
             pending_req_ids = [req[0] for req in formatted_requests]
             req_id = int_input("""\nTo commit a request please enter the request id and hit enter
@@ -85,12 +77,14 @@ Welcome {self.employee.name} .....
             if req_id in pending_req_ids:
                 self.admin.commit_request(req_id)
             elif req_id == 0:
-                return 
+                return
             else:
                 print("\nRequest not found please try again\n")
 
     def create_employee_form(self):
-        print("--------------------------------Creating a new employee--------------------------------")
+        print(
+            "--------------------------------Creating a new employee--------------------------------"
+        )
         worker_dict = {}
 
         worker_dict = self.__user_type_input(worker_dict)
@@ -117,14 +111,14 @@ Welcome {self.employee.name} .....
             if not created_relation:
                 print("\nReporting to user does not exsist try again.\n")
                 continue
-            else :
+            else:
                 print(
                     f"Employee with id {created_relation[1]} is now reporting to {created_relation[0]}"
                 )
 
-    def __user_type_input(self,worker_dict):
+    def __user_type_input(self, worker_dict):
         user_type_input = int_input(
-"""
+            """
 1 : Make a HR type user
 2 : Make a Worker type user
 
@@ -139,4 +133,3 @@ Welcome {self.employee.name} .....
                 return worker_dict
             else:
                 print("Enter a valid input ")
-

@@ -105,7 +105,6 @@ class Test_parse_populate_utils(unittest.TestCase):
             },
         ]
         res = populate_relations(parsed_relations)
-        pprint(res)
         assert res == [
             {
                 "empId": 1,

@@ -88,7 +88,8 @@ class Employee(ABC):
                 return True
 
         except Exception as e:
-            print(e)
+            message = str(e)
+            print(message)
 
     @abstractmethod
     def info():

@@ -36,6 +36,7 @@ class Hr_employee(Worker):
             ["request_status", "assigned_hr"],
             [["committed", "rejected", "approved_by_hr"], self.empId],
         )
+        pprint(data)
         if data:
             data = parse_requests(data)
             data = populate_requests(data)

@@ -33,6 +33,7 @@ class Admin(Employee):
         data = read_fields_from_record(
             "requests", "*", "request_status", ["committed", "rejected"]
         )
+        print(data)
         if data:
             data = parse_requests(data)
             data = populate_requests(data)
@@ -83,4 +84,4 @@ class Admin(Employee):
             - Remove worker
             - Approve a request
         """
-        return doc
+        print(doc)

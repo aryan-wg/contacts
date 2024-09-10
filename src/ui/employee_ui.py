@@ -39,12 +39,12 @@ class EmployeeUi:
                 "\n1 : Request change in information \n0 : go back press \n"
         )
         if selected == 0:
-            return 
+            return  
         elif selected == 1:
             self.update_profile_input()
 
     def update_password_input(self):
-        passwords = {}
+        passwords = {"user_type":self.employee.user_type}
         passwords["old_pass"] = maskpass.askpass("Enter your current password : ")
         passwords = password_input(passwords)
         if self.employee.update_password(passwords["old_pass"], passwords["password"]):

@@ -34,7 +34,7 @@ Press the number in front of the selectedtion to perform an action :-
                 self.update_password_input()
             case 5:
                 exit()
-
+        self.show_menu()
     def show_my_team(self, empId):
         selected = int_input(
             """
@@ -44,7 +44,7 @@ Press the number in front of the selectedtion to perform an action :-
 2 : See people lower in hierarchy 
 0 : go to previous menu 
 ----------------------------------------------------------------------------------------------
-                """
+"""
         )
         match selected:
             case 1:

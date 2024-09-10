@@ -98,10 +98,8 @@ def update_one_record(table, values_dict, key_type, key):
 
         argument_dict[f"{key}"] = value
 
-    # pprint(argument_dict)
     set_string = set_string[0:-1]
     query_string = f"update {table} set{set_string} where {key_type} = :{key_type}"
-    # print(query_string)
     cur.execute(query_string, argument_dict)
     con.commit()
     return True

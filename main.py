@@ -17,6 +17,7 @@ def main():
     user_obj = active_auth_ui.login()
     active_user_ui = None
     if user_obj.user_type == "admin":
+        # here the user_obj is a good example of dependency inverison  
         active_user_ui = AdminUi(user_obj)
     elif user_obj.user_type == "worker":
         active_user_ui = WorkerUi(user_obj)

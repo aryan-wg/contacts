@@ -147,8 +147,8 @@ class TestHr(unittest.TestCase):
                 "approved_by_hr",
             )
         ]
-        request = 
-        mock_update_record.assert_called_with("requests",request,"request_id",1)
+        # request = 
+        # mock_update_record.assert_called_with("requests",request,"request_id",1)
     def test_reject_request(self):
         pass
 

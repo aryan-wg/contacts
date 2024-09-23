@@ -1,3 +1,5 @@
+from src.routers.admin_routes import admin_router 
+
 from src.database.db_setup import create_tables, insert_sample_data
 from src.ui.admin_ui import AdminUi
 from src.ui.worker_ui import WorkerUi
@@ -7,26 +9,34 @@ from src.utils.parsing_populating_utils import populate_relations
 
 from pprint import pprint
 
+from fastapi import FastAPI
 
-def main():
-    create_tables()
-    # insert_sample_data()
+app = FastAPI()
 
+@app.get("/test")
+def test():
+    return {"Status":"API running"}
 
-    active_auth_ui = Auth_ui()
-    user_obj = active_auth_ui.login()
-    active_user_ui = None
-    if user_obj.user_type == "admin":
-        # here the user_obj is a good example of dependency inverison  
-        active_user_ui = AdminUi(user_obj)
-    elif user_obj.user_type == "worker":
-        active_user_ui = WorkerUi(user_obj)
-    elif user_obj.user_type == "hr":
-        active_user_ui = HrUi(user_obj)
-
-    if active_user_ui:
-        active_user_ui.show_menu()
+app.include_router(admin_router,prefix = "/admin")
 
 
-if __name__ == "__main__":
-    main()
+# def main():
+#     create_tables()
+#     # insert_sample_data()
+#     active_auth_ui = Auth_ui()
+#     user_obj = active_auth_ui.login()
+#     active_user_ui = None
+#     if user_obj.user_type == "admin":
+#         # here the user_obj is a good example of dependency inverison  
+#         active_user_ui = AdminUi(user_obj)
+#     elif user_obj.user_type == "worker":
+#         active_user_ui = WorkerUi(user_obj)
+#     elif user_obj.user_type == "hr":
+#         active_user_ui = HrUi(user_obj)
+#
+#     if active_user_ui:
+#         active_user_ui.show_menu()
+#
+#
+# if __name__ == "__main__":
+#     main()

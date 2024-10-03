@@ -21,18 +21,7 @@ class Auth:
 
                 check = check_pass(self.password,hashed_db)
                 if check:
-                    if user_type == "admin":
-                        new_admin = Admin(employee_info)
-                        return new_admin
-
-                    elif user_type == "hr":
-                        new_hr = Hr_employee(employee_info)
-                        return new_hr
-
-                    elif user_type == "worker":
-                        new_worker = Worker(employee_info)
-                        return new_worker
-
+                    return user_type
                 else:
                     return None
         except NameError as err:

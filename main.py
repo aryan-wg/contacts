@@ -1,17 +1,36 @@
 from src.routers.admin_routes import admin_router 
-
-from src.database.db_setup import create_tables, insert_sample_data
-from src.ui.admin_ui import AdminUi
-from src.ui.worker_ui import WorkerUi
-from src.ui.hr_ui import HrUi
-from src.ui.auth_ui import Auth_ui
-from src.utils.parsing_populating_utils import populate_relations
-
-from pprint import pprint
-
+from src.routers.auth_routes import auth_router
+from fastapi.middleware.cors import CORSMiddleware
+# from src.database.db_setup import create_tables, insert_sample_data
+# from src.ui.admin_ui import AdminUi
+# from src.ui.worker_ui import WorkerUi
+# from src.ui.hr_ui import HrUi
+# from src.ui.auth_ui import Auth_ui
+# from src.utils.parsing_populating_utils import populate_relations
+#
+# from pprint import pprint
+#
 from fastapi import FastAPI
+import yaml
 
 app = FastAPI()
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    with open("openapi.yaml", "r") as f:
+        return yaml.safe_load(f)
+
+app.openapi = custom_openapi
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this to specific origins in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.include_router(auth_router,tags=["auth"], prefix="/v1/auth")
 
 @app.get("/test")
 def test():

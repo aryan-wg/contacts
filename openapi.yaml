@@ -1,0 +1,599 @@
+openapi: 3.1.0
+info:
+  title: Contacts api's docs
+  description : This is the documentation of organization management system 
+  version : 2.0.0
+
+servers:
+ - url: http://127.0.0.1:8000/v1
+   description: Production
+ - url: http://127.0.0.1:8000/v2
+   description: Dev
+
+tags:
+  - name: Employee
+    description: Routes that employees can access
+  - name: General
+    description: These are the routes that can be accessed by any user
+  - name: Auth
+    description: These are the routes employees hit when dealing with auth features 
+
+paths:
+  /auth/employee/{emp_id}/password:
+    post:
+      security:
+        - contacts_auth: []
+      summary: This route will be used to create a new password
+      tags:
+        - Auth
+      parameters:
+        - $ref: "#/components/parameters/emp-id"
+      responses:
+        200:
+          $ref: "#/components/responses/200Success"
+  /auth/employee/{emp_id}:
+    post:
+      summary: This is the route we will hit to login and get token
+      tags:
+        - Auth
+      parameters:
+        - $ref: "#/components/parameters/emp-id"
+      requestBody:
+        $ref: "#/components/requestBodies/login_body"
+        
+
+  /employee:
+    get:
+      security:
+        - contacts_auth: []
+      tags:
+        - Employee
+      parameters:
+        - name: query_username
+          required: true
+          in: query
+          schema:
+            type: string
+
+      summary: Returns a list of users according to search query.
+      description: Returns an array of username and id that match the search query
+      responses:
+        200:
+          description: A json array of usernames and user ids
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/emp_info"
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+    
+    post:
+      security:
+        - contacts_auth: []
+      tags:
+        - Employee
+      summary: Creates a user in the system 
+      description: Endpoint creates a user in the system, this endpoint can only be hit by admin
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newEmployee"
+      responses:
+        200:
+          $ref: "#/components/responses/200Success"
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+  /employee/{emp_id}:
+    delete:
+      security:
+        - contacts_auth: []
+      tags:
+        - Employee
+      parameters:
+        - $ref: "#/components/parameters/emp-id"
+
+      summary: Removes an employee from the database
+      description: Endpoint removes an employee from the database can only be invoked by admin will shift all the reporting employees to the person next in hierarchy
+
+      responses:
+        200:
+          description: A simple response that tells if deletion is successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        400:
+          $ref: "#/components/responses/400BadRequest"
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+        
+  /employee/{emp_id}/request:
+    get:
+      tags: 
+        - Employee
+      summary: Returns a list of requests created by employee 
+      parameters:
+      - $ref: '#/components/parameters/request_status'
+      security:
+        - contacts_auth: []
+      responses:
+        200:
+          $ref: "#/components/responses/200requests"
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        400:
+          $ref: '#/components/responses/400BadRequest'
+          
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+
+    post:
+      tags:
+        - Employee
+      summary: Creates a new request in the db
+      security:
+        - contacts_auth: []
+      responses:
+        200:
+          description: Request created by user
+          content:
+            application/json: 
+              schema:
+                type: object
+                properties:
+                  success: 
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/request"
+        
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+  
+  /employee/{emp_id}/reports-to:
+    get:
+      security:
+        - contacts_auth: []
+      tags:
+        - Employee
+      summary: Returns the employee to whom an employee with id ==  employeeId reports
+      parameters:
+        - $ref: "#/components/parameters/emp-id"
+      responses:
+        200:
+          description: Basic contact info of the user  
+          content:
+            application/json:
+              schema:  
+                $ref: "#/components/schemas/emp_info"
+
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+    
+    post:
+      security:
+        - contacts_auth: []
+      tags:
+        - Employee
+      summary: This endpoint will change who a user reports to can only be hit by an admin
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/relation"
+                required:
+                  - employee
+                  - reports_to
+  /reported_by:
+    get:
+      security:
+        _ contacts_auth: []
+      tags:
+      - General
+      summary: Returns an array of employees that report to employee with id == employeeId
+      parameters:
+        - name: employeeId
+          required: true
+          in: query
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Basic contact info of the users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/searched_emp_info"
+    
+
+
+  /admin/request:
+    get:
+      tags:
+        - Admin
+      summary: Returns a list of requests  
+      parameters:
+      - $ref: "#/components/parameters/request_status"
+      security:
+        - contacts_auth: []
+      responses:
+        200:
+         $ref: "#/components/responses/200requests"
+    
+        400:
+          $ref: '#/components/responses/400BadRequest'
+          
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+    patch:
+      tags:
+        - Admin
+      summary: Commits an employee's request into the database hence updating the user 
+      parameters:
+        - $ref: "#/components/parameters/reqId"
+      security:
+        - contacts_auth: []
+      responses:
+        200:
+          $ref: "#/components/responses/200requests"
+      
+          
+  /hr/request:
+    get:
+      tags:
+        - Hr
+      summary: Returns a list of requests  
+      parameters:
+      - $ref: "#/components/parameters/request_status"
+      security:
+        - contacts_auth: []
+      responses:
+        200:
+          $ref: "#/components/responses/200requests"
+        
+        400:
+          $ref: '#/components/responses/400BadRequest'
+          
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+      
+    patch:
+      tags:
+        - Hr
+      summary: Returns a list of requests  
+      parameters:
+      - $ref: "#/components/parameters/reqId"
+
+      requestBody:
+        $ref: "#/components/requestBodies/request"
+
+      security:
+        - contacts_auth: []
+      responses:
+        200:
+          $ref: "#/components/responses/200requests"
+        
+        400:
+          $ref: '#/components/responses/400BadRequest'
+          
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+
+      
+components:
+  securitySchemes:
+    # bearerAuth: # arbitrary name for the security scheme
+    #   type: http
+    #   scheme: bearer
+    #   bearerFormat: JWT
+  
+    contacts_auth:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: auth/login
+
+  schemas:
+    request: 
+      type: object
+      properties: 
+        reqId:
+          type: integer
+        created_by:
+          $ref: "#/components/schemas/employeeId"
+        updated_info:
+          $ref: "#/components/schemas/updatedInfo"
+        assigned_hr:
+          $ref: "#/components/schemas/employeeId"
+        created_at:
+          $ref: "#/components/schemas/timeStamp"
+        update_committed_at:
+          $ref: "#/components/schemas/timeStamp"
+        request_status: 
+          type: string
+          enum: ["hr_assigned","committed","rejected","approved_by_hr"]
+        remark: 
+          type: string
+      required:
+        - reqId
+        - created_by
+        - updated_info
+        - assigned_hr
+        - created_at
+        - update_committed_at
+        - request_status
+    updatedInfo:
+      type: object
+      properties:
+        name: 
+          $ref: "#/components/schemas/name"
+        phone:
+          $ref: "#/components/schemas/phone"
+        email:
+          $ref: "#/components/schemas/email"
+        address: 
+          $ref: '#/components/schemas/address'
+      
+      required:
+        - name
+        - phone
+        - email
+        - address
+    
+    address:
+      type: object
+      properties:
+        street:
+          type: string
+        postal_code:
+          type: integer
+          examples:
+            - 243001
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+          
+      required:
+        - street
+        - postal_code
+        - city
+        - state
+        - country
+    employeeId:
+      name: employeeId
+      type: integer
+      examples:
+        - 4
+      description: Employee id
+    
+    timeStamp:
+      name: timeStamp
+      type: integer
+      examples:
+        - 1727347857
+      description: Unix epoch timestamp in seconds  
+    
+    emp_info:
+      type: object
+      properties: 
+        id:
+          $ref: "#/components/schemas/emp_id"
+        name:
+          $ref: "#/components/schemas/name"
+        email:
+          $ref: "#/components/schemas/email"
+        phone:
+          $ref: "#/components/schemas/phone"
+      required:
+        - id
+        - name
+        - email
+        - phone
+      examples:
+          - id: 9
+            name: sampleName
+            email: test@test.com
+            phone: 9999999999
+    relation:
+      type: object
+      properties:
+        employee: 
+          type: integer
+        reports_to:
+          type: integer
+
+    newEmployee:
+      type: object
+      properties:
+        name:
+          $ref: "#/components/schemas/name"
+        phone:
+          $ref: "#/components/schemas/phone"
+        email: 
+          $ref: "#/components/schemas/email"
+        address: 
+          $ref: '#/components/schemas/address'
+        reports_to:
+          type: integer
+          description: userId of employee which this employee reports to
+      required:
+        - name
+        - phone
+        - email
+        - address
+        - reports_to
+
+    name: 
+      type: string
+      examples:
+        - Test user
+    empId: 
+      type: integer
+      examples: 
+        - 24
+    email:
+      type: string
+      examples:
+        - test@user.com
+    phone:
+        type: integer
+        examples: 
+        - 1234567890
+  
+
+  requestBodies:
+    login_body:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password: 
+                type: string
+            
+    request:
+      required: true
+      content: 
+        application/json:
+          schema:
+            type: object
+            properties: 
+              requestStatus:
+                type: string
+                examples:
+                  - approved_by_hr
+              remark:
+                type: string
+                examples:
+                  - this is a remark
+      
+  parameters:
+    request_status:
+      name: status
+      in: query
+      required: false
+      description: status of the request can be a csv string of committed,rejected, approved_by_hr, hr_assigned 
+      schema:
+        type: string
+
+    authorization:
+      name: authorization
+      in: header
+      required: true
+      description: This is the auth token containing login info and userId
+      schema:
+        type: string
+
+    req_id:
+      name: reqId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+    emp_id:
+      name: emp_id
+      in: path
+      required: true
+      schema:
+        type: string
+   
+  responses:
+    200Success:
+      description: A simple 200 success response
+      content:
+        application/json: 
+          schema:
+            type: object
+            properties:
+              success: 
+                type: boolean
+              message:
+                type: string
+            required:
+              - success
+              - message
+
+    200requests:
+      description: All requests that fall in the query catagories 
+      content:
+        application/json: 
+          schema:
+            type: object
+            properties:
+              success: 
+                type: boolean
+              data:
+                type: array
+                items:
+                  $ref: "#/components/schemas/request"
+
+    400BadRequest:
+      description: "Bad request"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: 
+              success: 
+                type: boolean
+                examples:
+                  - false
+              error:
+                type: string
+                examples:
+                  - you don't have access to this userId
+
+    401Unauthorized:
+      description: "Accessing restricted route"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                examples:
+                  - false
+              message:
+                type: string
+                examples:
+                  - Restricted route
+              
+    500InternalServerError:
+      description: "Internal server error"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                examples:
+                  - false
+              error:
+                type: string
+                examples:
+                  - There was some error while processing the request 
+

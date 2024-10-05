@@ -1,4 +1,4 @@
-from .validations_utils import validate_pin_code,int_input
+from .validations_utils import validate_pin_code, int_input
 
 import bcrypt
 import json
@@ -43,7 +43,8 @@ def format_for_display(keys, original_data):
 
     return printable_data
 
-def print_user_info_in_relation(relation,user_to_print):
+
+def print_user_info_in_relation(relation, user_to_print):
     print(f"""
 Name : {relation[user_to_print]["name"]}
 Email : {relation[user_to_print]["email"]}
@@ -51,8 +52,9 @@ Phone : {relation[user_to_print]["phone"]}
 Employee Id : {relation[user_to_print]["empId"]}
 """)
 
-def print_relation(relation):
-        print(
-            f"\n{relation["employee"]["name"]} with employee id {relation["employee"]["empId"]} reports to {relation["reports_to"]["name"]} with employee Id {relation["reports_to"]["empId"]}\n"
-        )
 
+def print_relation(relation):
+    return True
+    print(
+        f'\n{relation["employee"]["name"]} with employee id {relation["employee"]["empId"]} reports to {relation["reports_to"]["name"]} with employee Id {relation["reports_to"]["empId"]}\n'
+    )

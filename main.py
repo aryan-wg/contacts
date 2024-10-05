@@ -1,5 +1,6 @@
-from src.routers.admin_routes import admin_router 
-from src.routers.auth_routes import auth_router
+from src.routers.admin_router import admin_router 
+from src.routers.auth_router import auth_router
+from src.routers.employee_router import employee_router
 from fastapi.middleware.cors import CORSMiddleware
 # from src.database.db_setup import create_tables, insert_sample_data
 # from src.ui.admin_ui import AdminUi
@@ -31,12 +32,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(auth_router,tags=["auth"], prefix="/v1/auth")
-
+app.include_router(employee_router,tags=["employee"],prefix = "/v1/employee")
 @app.get("/test")
 def test():
     return {"Status":"API running"}
 
-app.include_router(admin_router,prefix = "/admin")
 
 
 # def main():

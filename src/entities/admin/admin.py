@@ -15,8 +15,8 @@ import json
 
 
 class Admin(Employee):
-    def __init__(self, employee_info):
-        super().__init__((*employee_info, "admin"))
+    # def __init__(self, employee_info):
+    #     super().__init__((*employee_info, "admin"))
 
     def get_pending_req(self):
         # for a request to be pending it should have req_status == approved_by_hr
@@ -59,8 +59,9 @@ class Admin(Employee):
         request["request_status"] = "committed"
         update_one_record("requests", request, "request_id", req_id)
         return True
-
-    def create_new_employee(self, new_employee):
+    
+    @staticmethod
+    def create_new_employee(new_employee):
         new_employee["password"] = hash_pass(new_employee["password"])
         created_employee = write_to_table("employees", new_employee)
         return created_employee

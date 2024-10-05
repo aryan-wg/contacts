@@ -14,29 +14,30 @@ import random
 
 
 class Employee(ABC):
-    def __init__(self, employee_info):
-        empId, name, phone, email, json_str_address, user_type = employee_info
-        self.name = name
-        self.phone = phone
-        self.email = email
-        self.empId = empId
-        # this address will be a dict that has information
-        # street,city,state,postal code, country
-        parsed_address = json.loads(json_str_address)
-        self.address = parsed_address
-        self.user_type = user_type
-        # print("new employee instantiated ", self.name)
-        # print(self.name,self.phone,self.email,self.address)
+    # def __init__(self, employee_info):
+    #     empId, name, phone, email, json_str_address, user_type = employee_info
+    #     self.name = name
+    #     self.phone = phone
+    #     self.email = email
+    #     self.empId = empId
+    #     # this address will be a dict that has information
+    #     # street,city,state,postal code, country
+    #     parsed_address = json.loads(json_str_address)
+    #     self.address = parsed_address
+    #     self.user_type = user_type
+    #     # print("new employee instantiated ", self.name)
+    #     # print(self.name,self.phone,self.email,self.address)
+    #
 
-    def get_profile_info(self):
-        profile = {
-            "name": self.name,
-            "phone": self.phone,
-            "email": self.email,
-            "empId": self.empId,
-            "address": self.address,
-        }
-        return profile
+    # def get_profile_info(self):
+    #     profile = {
+    #         "name": self.name,
+    #         "phone": self.phone,
+    #         "email": self.email,
+    #         "empId": self.empId,
+    #         "address": self.address,
+    #     }
+    #     return profile
 
     def search_other_employee(self, name):
         data = match_string_in_field(
@@ -44,21 +45,21 @@ class Employee(ABC):
         )
         return data
 
-    def update_password(self, old_pass, new_pass):
+    def update_password(self, old_pass, new_pass,empId):
         hashed_pass = read_fields_from_record(
-            "employees", "password", "empId", [self.empId]
+            "employees", "password", "empId", [empId]
         )[0][0]
         old_check = check_pass(old_pass, hashed_pass)
         if old_check:
             new_hashed = hash_pass(new_pass)
             return update_one_record(
-                "employees", {"password": new_hashed}, "empId", self.empId
+                "employees", {"password": new_hashed}, "empId",empId
             )
         else:
             print("Old password did not match \n")
             return False
 
-    def request_self_info_change(self, updated_info):
+    def request_self_info_change(self, updated_info,empId):
         # created_by integer NOT NULL, updated_info text NOT NULL, hr_assigned integer, approved_by_hr integer NOT NULL, remark text, created_at integer NOT NULL, update_committed integer NOT NULL
         all_hr = read_fields_from_record("employees", "empId", "user_type", ["hr"])
         try :
@@ -68,14 +69,14 @@ class Employee(ABC):
             else:
                 assigned_hr = random.choice(all_hr) 
                 if len(all_hr) == 1:
-                    if all_hr[0] == self.empId:
+                    if all_hr[0] == empId:
                         print("\nWarning - you are the only HR hence you will be approving your own request\n")
-                        assigned_hr = self.empId
+                        assigned_hr = empId
                 else :
-                    while assigned_hr == self.empId:
+                    while assigned_hr == empId:
                         assigned_hr = random.choice(all_hr)
                 request = {
-                    "created_by": self.empId,
+                    "created_by": empId,
                     "updated_info": updated_info,
                     "assigned_hr": assigned_hr,
                     "created_at": ceil(time.time()),

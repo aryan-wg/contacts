@@ -29,15 +29,18 @@ class Employee(ABC):
     #     # print(self.name,self.phone,self.email,self.address)
     #
 
-    # def get_profile_info(self):
-    #     profile = {
-    #         "name": self.name,
-    #         "phone": self.phone,
-    #         "email": self.email,
-    #         "empId": self.empId,
-    #         "address": self.address,
-    #     }
-    #     return profile
+    def __init__(self):
+        pass
+
+    def get_profile_info(self):
+        profile = {
+            # "name": self.name,
+            # "phone": self.phone,
+            # "email": self.email,
+            # "empId": self.empId,
+            # "address": self.address,
+        }
+        return profile
 
     def search_other_employee(self, name):
         data = match_string_in_field(

@@ -12,29 +12,29 @@ from pprint import pprint
 
 
 class Hr_employee(Worker):
-    def __init__(self, employee_info):
-        super().__init__((*employee_info, "hr"))
+    # def __init__(self, employee_info):
+    #     super().__init__((*employee_info, "hr"))
 
-    def get_pending_requests(self):
+    def get_pending_requests(self,empId):
         # all of the requests that have a status == hr_assigned and assigned_hr == self.empId are pending_requests
         data = read_by_multiple_attributes(
             "requests",
             "*",
             ["request_status", "assigned_hr"],
-            ["hr_assigned", self.empId],
+            ["hr_assigned", empId],
         )
         if data:
             data = parse_requests(data)
             data = populate_requests(data)
         return data
 
-    def get_closed_requests(self):
+    def get_closed_requests(self,empId):
         # all of the requests that have a status == committed or rejected and assigned_hr = self.empId are closed requests
         data = read_by_multiple_att_and_keys(
             "requests",
             "*",
             ["request_status", "assigned_hr"],
-            [["committed", "rejected", "approved_by_hr"], self.empId],
+            [["committed", "rejected", "approved_by_hr"], empId],
         )
         pprint(data)
         if data:

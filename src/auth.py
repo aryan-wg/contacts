@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from datetime import datetime,timedelta,timezone
 from typing import Annotated
-from fastapi import Depends
+from fastapi import Depends,HTTPException
 from .entities.admin.admin import Admin
 from .entities.hr.hr_employee import Hr_employee
 from .entities.worker.worker import Worker
@@ -40,15 +40,20 @@ class Auth:
         return Token(access_token = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM),token_type="Bearer")
     
     @abstractmethod
-    def validate_token(token:str):
-        try:
-            user = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
-            if user["user_type"] == "admin":
-                # here the user_obj is a good example of dependency inverison  
-                active_user = Admin()
-            elif user["user_type"] == "worker":
-                active_user = Worker()
-            elif user["user_type"]== "hr":
-                active_user = Hr_employee()
-        except 
+    def validate_token_gen_obj(token:str,):
+        if not token:
+            raise HTTPException(status = 401 ,detail = "Not authenticated")
+        else:
+            try:
+                user = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+                match user["user_type"]:
+                    case "admin":
+                        return Admin()
+                    case "worker":
+                         return Worker()
+                    case "hr":
+                         return  Hr_employee()
+
+            except JWTError as err:
+                raise HTTPException(status = 403,detail=str(err))
 

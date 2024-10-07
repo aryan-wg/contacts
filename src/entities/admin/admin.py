@@ -4,6 +4,7 @@ from ...utils.db_utils import (
     update_one_record,
     write_to_table,
     check_if_exists_in_db,
+    delete_from_table
 )
 from ...utils.general_utils import  hash_pass
 from ...utils.parsing_populating_utils import parse_requests, populate_requests
@@ -17,6 +18,8 @@ import json
 class Admin(Employee):
     # def __init__(self, employee_info):
     #     super().__init__((*employee_info, "admin"))
+    def __init__(self):
+        pass
 
     def get_pending_req(self):
         # for a request to be pending it should have req_status == approved_by_hr
@@ -60,8 +63,7 @@ class Admin(Employee):
         update_one_record("requests", request, "request_id", req_id)
         return True
     
-    @staticmethod
-    def create_new_employee(new_employee):
+    def create_new_employee(self,new_employee):
         new_employee["password"] = hash_pass(new_employee["password"])
         created_employee = write_to_table("employees", new_employee)
         return created_employee
@@ -76,6 +78,22 @@ class Admin(Employee):
             new_relation["reports_to"] = reports_to_emp_id
             created_relation = write_to_table("relations", new_relation)
             return created_relation
+
+    def remove_employee(self,emp_id):
+        try:
+            if not check_if_exists_in_db("employees","empId",emp_id):
+                raise Exception("Employee not found in database")
+            else:
+                reporting_employees = read_fields_from_record("relations","employee","reports_to",[emp_id])
+                reporting_to = read_fields_from_record("relations","reports_to","employee",[emp_id])
+                print(reporting_to,reporting_employees)
+
+        except Exception as e:
+            raise e
+        pass
+
+    def delete_employee(self,emp_id):
+        return delete_from_table("employees","empId",emp_id)
 
     def info(self):
         doc = """

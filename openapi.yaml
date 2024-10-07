@@ -27,17 +27,26 @@ paths:
       tags:
         - Auth
       parameters:
-        - $ref: "#/components/parameters/emp-id"
+        - $ref: "#/components/parameters/emp_id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+              required:
+                - password
+
       responses:
         200:
           $ref: "#/components/responses/200Success"
-  /auth/employee/{emp_id}:
+  /auth/login:
     post:
       summary: This is the route we will hit to login and get token
       tags:
         - Auth
-      parameters:
-        - $ref: "#/components/parameters/emp-id"
       requestBody:
         $ref: "#/components/requestBodies/login_body"
         
@@ -95,7 +104,7 @@ paths:
       tags:
         - Employee
       parameters:
-        - $ref: "#/components/parameters/emp-id"
+        - $ref: "#/components/parameters/emp_id"
 
       summary: Removes an employee from the database
       description: Endpoint removes an employee from the database can only be invoked by admin will shift all the reporting employees to the person next in hierarchy
@@ -114,6 +123,8 @@ paths:
           $ref: "#/components/responses/400BadRequest"
         401:
           $ref: "#/components/responses/401Unauthorized"
+        403:
+          $ref: "#/components/responses/403Forbidden"
         500:
           $ref: "#/components/responses/500InternalServerError"
         
@@ -202,7 +213,7 @@ paths:
   /reported_by:
     get:
       security:
-        _ contacts_auth: []
+        - contacts_auth: []
       tags:
       - General
       summary: Returns an array of employees that report to employee with id == employeeId
@@ -308,7 +319,7 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: auth/login
+          tokenUrl: v1/auth/login
 
   schemas:
     request: 
@@ -425,6 +436,8 @@ components:
     newEmployee:
       type: object
       properties:
+        user_type:
+          $ref: "#/components/schemas/user_type"
         name:
           $ref: "#/components/schemas/name"
         phone:
@@ -433,15 +446,20 @@ components:
           $ref: "#/components/schemas/email"
         address: 
           $ref: '#/components/schemas/address'
+        password:
+          $ref: "#/components/schemas/password"
         reports_to:
           type: integer
           description: userId of employee which this employee reports to
       required:
         - name
+        - userType
         - phone
         - email
         - address
         - reports_to
+    user_type: 
+      enum: ["hr","admin","worker"]
 
     name: 
       type: string
@@ -459,18 +477,24 @@ components:
         type: integer
         examples: 
         - 1234567890
-  
+    password:
+      description: There must be 1 int 1 uppercase 1 lowercase and 1 special character with min length = 8 
+      type: string
+      examples: 
+        - Test@123
 
   requestBodies:
     login_body:
       required: true
       content:
-        application/json:
+        multipart/form-data:
           schema:
             type: object
             properties:
               password: 
                 type: string
+              username:
+                type: integer
             
     request:
       required: true
@@ -566,6 +590,22 @@ components:
                   - you don't have access to this userId
 
     401Unauthorized:
+      description: "Not authorized"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                examples:
+                  - false
+              message:
+                type: string
+                examples:
+                  - Not logged in              
+
+    403Forbidden:
       description: "Accessing restricted route"
       content:
         application/json:
@@ -580,7 +620,7 @@ components:
                 type: string
                 examples:
                   - Restricted route
-              
+
     500InternalServerError:
       description: "Internal server error"
       content:
@@ -596,4 +636,3 @@ components:
                 type: string
                 examples:
                   - There was some error while processing the request 
-

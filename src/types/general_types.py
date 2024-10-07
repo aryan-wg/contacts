@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 from enum import Enum
 
+class ChangePassBody(BaseModel):
+    old_pass:str
+    new_pass:str
+
 class UserTypeEnum(str,Enum):
     admin = "admin"
     hr = "hr"

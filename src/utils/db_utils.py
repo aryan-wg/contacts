@@ -11,6 +11,13 @@ tables_insert_map = {
 cur = get_cursor()
 con = get_con()
 
+def delete_from_table(table,key_type,key):
+    try:
+        cur.execute(f"delete from {table} where {key_type} is {key}")    
+        con.commit()
+        return True
+    except Exception as err:
+        return False
 
 def write_to_table(table, data_obj):
     cur.execute(tables_insert_map[table], data_obj)

@@ -12,6 +12,9 @@ class Worker(Employee):
     #     elif len(employee_info) == 6:
     #         super().__init__(employee_info)
 
+    def __init__(self):
+        super().__init__()
+
     def reports_to(self, empId):
         data = read_fields_from_record("relations", "*", "employee", [empId])
         if data:

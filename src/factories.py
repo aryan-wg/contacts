@@ -12,35 +12,48 @@ from fastapi.security import OAuth2PasswordBearer
 
 token_from_auth_header = OAuth2PasswordBearer(tokenUrl="/login")
 
+# token: Annotated[str, Depends(token_from_auth_header)],user_type:str
+
+
+def admin_handler(token: Annotated[str, Depends(token_from_auth_header)]):
+    user_type = "admin"
+    global token_from_auth_header
+    return dict({"token": token, "user_type": user_type})
+
+
+def user_factory(token_obj: Annotated[dict, Depends(admin_handler)]):
+    try:
+        print(token_obj["token"], token_obj["user_type"])
+        # print(token_obj["token"])
+        user = Auth.validate_token_gen_obj()
+        # if isinstance(user, Admin):
+        print(user)
+        # else:
+        #     raise HTTPException(status_code=403)
+    # # return user
+    except JWTError as err:
+        raise HTTPException(status_code=400, detail=str(err))
+
 
 def admin_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
-        user = Auth.validate_token_gen_obj(token)
-        if isinstance(user, Admin):
-            return user
-        else:
-            raise HTTPException(status_code=403)
+        token_obj = {"token": token, "user_type": "admin"}
+        return Auth.validate_token_gen_obj(token_obj)
     except JWTError as err:
         raise HTTPException(status_code=400, detail=str(err))
 
 
 def hr_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
-        user = Auth.validate_token_gen_obj(token)
-        if isinstance(user, Hr_employee):
-            return user
-        else:
-            raise HTTPException(status_code=403)
+        token_obj = {"token": token, "user_type": "hr"}
+        return Auth.validate_token_gen_obj(token_obj)
     except JWTError as err:
         raise HTTPException(status_code=400, detail=str(err))
 
 
 def worker_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
-        user = Auth.validate_token_gen_obj(token)
-        if isinstance(user, Worker):
-            return user
-        else:
-            raise HTTPException(status_code=403)
+        token_obj = {"token": token, "user_type": "worker"}
+        return Auth.validate_token_gen_obj(token_obj)
     except JWTError as err:
         raise HTTPException(status_code=400, detail=str(err))

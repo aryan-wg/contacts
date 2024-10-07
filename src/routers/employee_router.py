@@ -11,7 +11,7 @@ from ..types.general_types import EmployeeInfo
 employee_router = APIRouter()
 
 
-@employee_router.post("/")
+@employee_router.post("/",status_code = 201)
 def create_employee(
     new_employee: EmployeeInfo, admin_obj: Annotated[Admin, Depends(admin_factory)]
 ):

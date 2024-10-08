@@ -1,4 +1,4 @@
-from ..entities.worker.worker import Worker 
+from ..entities.worker.worker import Worker
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Annotated
@@ -10,14 +10,25 @@ from ..types.general_types import ChangePassBody
 from ..factories import worker_factory
 from fastapi.security import OAuth2PasswordRequestForm
 
+################################################################
+from ..Test import Test
+################################################################
+
 SECRET_KEY = "xH1fIgsTLC8PCN3BQwgFJXvSxx753idA"
 ALGORITHM = "HS256"
+
 
 class login_body(BaseModel):
     password: str
 
 
 auth_router = APIRouter()
+
+
+@auth_router.get("/test")
+def test_sqlite():
+    test = Test()
+    return test.sqlite_multiple_read_write_calls()
 
 
 @auth_router.post("/login")

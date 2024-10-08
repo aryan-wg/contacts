@@ -99,16 +99,15 @@ class Admin(Employee):
                 )
                 for reporting_employee in reporting_employees:
                     write_to_table(
-                        "relations", {"employee": reporting_employee, "reports_to": reporting_to}
+                        "relations",
+                        {"employee": reporting_employee, "reports_to": reporting_to},
                     )
-                delete_from_table("relations","reports_to",emp_id)
-                delete_from_table("employees","empId",emp_id)
-                print(reporting_to, reporting_employees)
+                delete_from_table("relations", "reports_to", emp_id)
+                self.delete_employee(emp_id)
                 return True
 
         except Exception as e:
             raise e
-        pass
 
     def delete_employee(self, emp_id):
         return delete_from_table("employees", "empId", emp_id)

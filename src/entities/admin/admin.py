@@ -4,9 +4,9 @@ from ...utils.db_utils import (
     update_one_record,
     write_to_table,
     check_if_exists_in_db,
-    delete_from_table
+    delete_from_table,
 )
-from ...utils.general_utils import  hash_pass
+from ...utils.general_utils import hash_pass
 from ...utils.parsing_populating_utils import parse_requests, populate_requests
 
 from math import ceil
@@ -62,8 +62,8 @@ class Admin(Employee):
         request["request_status"] = "committed"
         update_one_record("requests", request, "request_id", req_id)
         return True
-    
-    def create_new_employee(self,new_employee):
+
+    def create_new_employee(self, new_employee):
         new_employee["password"] = hash_pass(new_employee["password"])
         created_employee = write_to_table("employees", new_employee)
         return created_employee
@@ -79,21 +79,39 @@ class Admin(Employee):
             created_relation = write_to_table("relations", new_relation)
             return created_relation
 
-    def remove_employee(self,emp_id):
+    def remove_employee(self, emp_id):
         try:
-            if not check_if_exists_in_db("employees","empId",emp_id):
-                raise Exception("Employee not found in database")
+            if not check_if_exists_in_db("employees", "empId", emp_id):
+                return False
             else:
-                reporting_employees = read_fields_from_record("relations","employee","reports_to",[emp_id])
-                reporting_to = read_fields_from_record("relations","reports_to","employee",[emp_id])
-                print(reporting_to,reporting_employees)
+                reporting_employees = read_fields_from_record(
+                    "relations", "employee", "reports_to", [emp_id]
+                )
+                reporting_to = read_fields_from_record(
+                    "relations", "reports_to", "employee", [emp_id]
+                )
+                reporting_to = reporting_to[0][0]
+                reporting_employees = list(
+                    map(
+                        lambda reporting_employee: reporting_employee[0],
+                        reporting_employees,
+                    )
+                )
+                for reporting_employee in reporting_employees:
+                    write_to_table(
+                        "relations", {"employee": reporting_employee, "reports_to": reporting_to}
+                    )
+                delete_from_table("relations","reports_to",emp_id)
+                delete_from_table("employees","empId",emp_id)
+                print(reporting_to, reporting_employees)
+                return True
 
         except Exception as e:
             raise e
         pass
 
-    def delete_employee(self,emp_id):
-        return delete_from_table("employees","empId",emp_id)
+    def delete_employee(self, emp_id):
+        return delete_from_table("employees", "empId", emp_id)
 
     def info(self):
         doc = """

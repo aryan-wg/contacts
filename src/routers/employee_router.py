@@ -34,9 +34,15 @@ def create_employee(
             "emp_id": created_emp[0],
         }
 
-@employee_router.delete("/{emp_id}")
+@employee_router.delete("/{emp_id}",status_code=204)
 def remove_employee(emp_id:int,admin_obj: Annotated[Admin,Depends(admin_factory)]):
-    admin_obj.remove_employee(emp_id)
+    try:
+        if admin_obj.remove_employee(emp_id):
+            return True
+        else:
+            raise HTTPException(status_code=404,detail="Employee not found in database")
+    except Exception as err:
+        raise HTTPException(status_code=500,detail=str(err))
 
 # @employee_router.get("/")
 # def test(data:EmployeeInfo,admin_obj:Annotated[Admin,Depends(admin_factory)]):

@@ -1,52 +1,16 @@
-import psycopg2
+# import psycopg2
 import json
+import asyncpg
 
-con = psycopg2.connect(
-    dbname="postgres", user="postgres", host="localhost", password="adminadmin"
-)
-cur = con.cursor()
-
-
-def get_cursor():
-    return cur
-
-
-def get_con():
-    return con
+async def get_con():
+    try:
+        return await asyncpg.connect(database="postgres", user="postgres", host="localhost", password="adminadmin")
+    except Exception as err:
+        raise Exception(err)
+    finally:
+        print("Get connection finished ")
 
 
-def create_tables():
-    table_creation_queries = [
-        """CREATE TABLE IF NOT EXISTS employees(
-
-            empId SERIAL,
-            name text NOT NULL,
-            phone BIGINT NOT NULL,
-            email text NOT NULL,
-            address text NOT NULL,
-            password text NOT NULL,
-            user_type text NOT NULL)""",
-        """CREATE TABLE IF NOT EXISTS relations(
-
-            reports_to integer,
-            employee integer 
-            )""",
-        """CREATE TABLE IF NOT EXISTS requests(
-
-            request_id SERIAL,
-            created_by integer NOT NULL,
-            updated_info text NOT NULL,
-            assigned_hr integer,
-            remark text,
-            created_at bigint NOT NULL,
-            update_committed_at bigint NOT NULL,
-            request_status text NOT NULL)""",
-    ]
-
-    for query in table_creation_queries:
-        cur.execute(query)
-
-    con.commit()
 
 
 changed_values_dict = {

@@ -26,10 +26,10 @@ auth_router = APIRouter()
 
 
 @auth_router.get("/test")
-def test_sqlite():
+async def test_sqlite():
     # pass
     test = Test()
-    return test.sqlite_multiple_read_write_calls()
+    return await test.sqlite_multiple_read_write_calls()
 
 
 @auth_router.post("/login")

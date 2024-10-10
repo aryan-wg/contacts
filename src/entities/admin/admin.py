@@ -1,5 +1,5 @@
 from ..employee.employee import Employee
-from ...utils.pg_db_utils import (
+from ...utils.async_pg_db_utils import (
     read_fields_from_record,
     update_one_record,
     write_to_table,

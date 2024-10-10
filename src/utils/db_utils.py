@@ -1,5 +1,5 @@
 # from sqlite3 import Cursor
-from ..database.db_setup_postgres import get_cursor, get_con
+from ..database.db_setup import get_cursor, get_con
 from functools import reduce
 from pprint import pprint
 

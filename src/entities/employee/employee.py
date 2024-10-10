@@ -3,7 +3,7 @@ import json
 import time
 
 from ...utils.general_utils import check_pass, hash_pass
-from ...utils.pg_db_utils import (
+from ...utils.async_pg_db_utils import (
     match_string_in_field,
     read_fields_from_record,
     update_one_record,

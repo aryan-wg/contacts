@@ -1,6 +1,6 @@
 from ...utils.parsing_populating_utils import parse_requests, populate_requests
 from ..worker.worker import Worker
-from ...utils.pg_db_utils import (
+from ...utils.async_pg_db_utils import (
     update_one_record,
     read_fields_from_record,
     read_by_multiple_attributes,

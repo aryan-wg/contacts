@@ -1,4 +1,4 @@
-from .utils.db_utils import write_to_table
+from .utils.pg_db_utils import write_to_table
 
 class Test():
     def sqlite_multiple_read_write_calls(self):

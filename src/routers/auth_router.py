@@ -27,6 +27,7 @@ auth_router = APIRouter()
 
 @auth_router.get("/test")
 def test_sqlite():
+    # pass
     test = Test()
     return test.sqlite_multiple_read_write_calls()
 

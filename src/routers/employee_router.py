@@ -44,6 +44,12 @@ def remove_employee(emp_id:int,admin_obj: Annotated[Admin,Depends(admin_factory)
     except Exception as err:
         raise HTTPException(status_code=500,detail=str(err))
 
+
+@employee_router.get("/{emp_id}/requests",status_code=200)
+def get_requests(emp_id:int,status:str,admin_obj:Annotated[Admin,Depends(admin_factory)]):
+    pass
+
+
 # @employee_router.get("/")
 # def test(data:EmployeeInfo,admin_obj:Annotated[Admin,Depends(admin_factory)]):
 #     print(data)

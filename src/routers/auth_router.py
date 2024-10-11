@@ -32,7 +32,7 @@ async def test_sqlite():
     return await test.sqlite_multiple_read_write_calls()
 
 
-@auth_router.post("/login")
+@auth_router.post("/login", status_code = 200)
 def login(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]):
     auth_obj = Auth()
     try:
@@ -40,10 +40,12 @@ def login(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]):
         if auth_token:
             return auth_token
         else:
-            raise HTTPException(status_code=401, detail="Invalid userid or password")
-    except Exception as err:
-        return err
-
+            print(login_form.username, login_form.password)
+            raise HTTPException(status_code = 400, detail="Invalid userid or password")
+    except HTTPException as err:
+        raise HTTPException(status_code = err.status_code,detail = err.detail)
+    # except Exception as err:
+    #     raise HTTPException(status_code=500, detial=str(err))
     finally:
         del auth_obj
 

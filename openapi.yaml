@@ -42,6 +42,8 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/200Success"
+        400:
+          $ref: "#/components/responses/400BadRequest"
   /auth/login:
     post:
       summary: This is the route we will hit to login and get token
@@ -49,7 +51,17 @@ paths:
         - Auth
       requestBody:
         $ref: "#/components/requestBodies/login_body"
-        
+      responses:
+        200:
+          description: A login token 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/emp_info"
+        400:
+          $ref: "#/components/responses/400BadRequest"
+        500:
+          $ref: "#/components/responses/500InternalServerError"
 
   /employee:
     get:
@@ -93,6 +105,8 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/200Success"
+        400:
+          $ref: "#/components/responses/400BadRequest"
         401:
           $ref: "#/components/responses/401Unauthorized"
         500:
@@ -140,11 +154,12 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/200requests"
-        401:
-          $ref: "#/components/responses/401Unauthorized"
         400:
           $ref: '#/components/responses/400BadRequest'
-          
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        403:
+          $ref: "#/components/responses/403Forbidden"
         500:
           $ref: "#/components/responses/500InternalServerError"
 
@@ -169,14 +184,18 @@ paths:
                     items:
                       $ref: "#/components/schemas/request"
         
+        200:
+          $ref: "#/components/responses/200requests"
         400:
           $ref: '#/components/responses/400BadRequest'
         401:
           $ref: "#/components/responses/401Unauthorized"
+        403:
+          $ref: "#/components/responses/403Forbidden"
         500:
           $ref: "#/components/responses/500InternalServerError"
   
-  /employee/{emp_id}/reports-to:
+  /employee/{emp_id}/reports_to:
     get:
       security:
         - contacts_auth: []
@@ -192,7 +211,10 @@ paths:
             application/json:
               schema:  
                 $ref: "#/components/schemas/emp_info"
-
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        401:
+          $ref: "#/components/responses/401Unauthorized"
         500:
           $ref: "#/components/responses/500InternalServerError"
     
@@ -210,6 +232,17 @@ paths:
                 required:
                   - employee
                   - reports_to
+      responses:
+        200:
+          $ref: "#/components/responses/200requests"
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        403:
+          $ref: "#/components/responses/403Forbidden"
+        500:
+          $ref: "#/components/responses/500InternalServerError"
   /reported_by:
     get:
       security:
@@ -288,7 +321,7 @@ paths:
     patch:
       tags:
         - Hr
-      summary: Returns a list of requests  
+      summary: Updates the request accordingly and returns a list of requests  
       parameters:
       - $ref: "#/components/parameters/reqId"
 
@@ -587,7 +620,7 @@ components:
               error:
                 type: string
                 examples:
-                  - you don't have access to this userId
+                  - Bad request 
 
     401Unauthorized:
       description: "Not authorized"

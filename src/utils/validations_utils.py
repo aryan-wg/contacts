@@ -34,3 +34,31 @@ def validate_password(password):
     match = re.match(pattern, password)
 
     return bool(match)
+
+
+def check_email_format(email):
+    if validate_email(email):
+        return email
+    else:
+        raise ValueError("Invalid email format")
+
+
+def check_phone_format(phone):
+    if validate_phone(phone):
+        return phone
+    else:
+        raise ValueError("Invalid phone number format")
+
+
+def check_pin_code_format(pin):
+    if validate_pin_code(pin):
+        return pin
+    else:
+        raise ValueError("Invalid pin code format")
+
+
+def check_password_format(password):
+    if validate_password(password):
+        return password
+    else:
+        raise ValueError("Invalid password format")

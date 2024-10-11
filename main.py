@@ -2,6 +2,7 @@ from src.routers.admin_router import admin_router
 from src.routers.auth_router import auth_router
 from src.routers.employee_router import employee_router
 from fastapi.middleware.cors import CORSMiddleware
+from src.utils.async_pg_db_utils import create_tables
 # from src.database.db_setup import create_tables, insert_sample_data
 # from src.ui.admin_ui import AdminUi
 # from src.ui.worker_ui import WorkerUi
@@ -15,6 +16,10 @@ from fastapi import FastAPI
 import yaml
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_functions():
+    await create_tables()
 
 def custom_openapi():
     if app.openapi_schema:

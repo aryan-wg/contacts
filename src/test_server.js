@@ -56,4 +56,4 @@ const getRes = (times) => {
   return 0
 }
 
-getRes(10)
+getRes(510)

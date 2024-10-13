@@ -1,3 +1,4 @@
+from sys import exception
 from ..employee.employee import Employee
 from ...utils.async_pg_db_utils import (
     read_fields_from_record,
@@ -5,6 +6,7 @@ from ...utils.async_pg_db_utils import (
     write_to_table,
     check_if_exists_in_db,
     delete_from_table,
+    read_by_multiple_attributes,
 )
 from ...utils.general_utils import hash_pass
 from ...utils.parsing_populating_utils import parse_requests, populate_requests
@@ -21,30 +23,36 @@ class Admin(Employee):
     def __init__(self):
         pass
 
-    def get_pending_req(self):
+    async def get_req(self,status_list):
+        data = await read_fields_from_record("requests","*","request_status",status_list)
+        if data:
+            data = parse_requests(data)
+            data = await populate_requests(data)
+        return data
+
+    async def get_pending_req(self):
         # for a request to be pending it should have req_status == approved_by_hr
-        data = read_fields_from_record(
+        data = await read_fields_from_record(
             "requests", "*", "request_status", ["approved_by_hr"]
         )
         if data:
             data = parse_requests(data)
-            data = populate_requests(data)
+            data = await populate_requests(data)
         return data
 
-    def get_closed_req(self):
+    async def get_closed_req(self):
         # for a request to be closed it should have req_status == committed or rejected
-        data = read_fields_from_record(
+        data = await read_fields_from_record(
             "requests", "*", "request_status", ["committed", "rejected"]
         )
-        print(data)
         if data:
             data = parse_requests(data)
-            data = populate_requests(data)
+            data = await populate_requests(data)
         return data
 
     async def commit_request(self, req_id):
         # get request information
-        request = read_fields_from_record("requests", "*", "request_id", [req_id])
+        request = await read_fields_from_record("requests", "*", "request_id", [req_id])
         request = parse_requests(request)
         request = request[0]
 
@@ -65,38 +73,48 @@ class Admin(Employee):
         await update_one_record("requests", request, "request_id", req_id)
         return True
 
-    def create_new_employee(self, new_employee):
+    async def create_new_employee(self, new_employee):
         try:
             new_employee["password"] = hash_pass(new_employee["password"])
-            if check_if_exists_in_db("employees","email",new_employee["email"]):
-                raise ValueError(f"User with email {new_employee['email']} already exists")
+            new_employee["address"] = json.dumps(new_employee["address"])
+            if await check_if_exists_in_db("employees", "email", new_employee["email"]):
+                raise ValueError(
+                    f"User with email {new_employee['email']} already exists"
+                )
             else:
-                created_employee = write_to_table("employees", new_employee)
+                created_employee = await write_to_table("employees", new_employee)
                 return created_employee
+        except ValueError as err:
+            raise ValueError(err)
         except Exception as err:
             raise Exception(err)
-            
 
-    def create_new_relation(self, emp_id, reports_to_emp_id):
-        check = check_if_exists_in_db("employees", "empId", reports_to_emp_id)
-        if not check:
-            return False
-        else:
-            new_relation = {}
-            new_relation["employee"] = emp_id
-            new_relation["reports_to"] = reports_to_emp_id
-            created_relation = write_to_table("relations", new_relation)
-            return created_relation
+    async def create_new_relation(self, emp_id, reports_to_emp_id):
+        try:
+            if reports_to_emp_id == 0 or await check_if_exists_in_db(
+                "employees", "empId", reports_to_emp_id
+            ):
+                new_relation = {}
+                new_relation["employee"] = emp_id
+                new_relation["reports_to"] = reports_to_emp_id
+                created_relation = await write_to_table("relations", new_relation)
+                return created_relation
+            else:
+                return False
+        except Exception as err:
+            raise Exception(err)
 
     async def remove_employee(self, emp_id):
         try:
-            if not check_if_exists_in_db("employees", "empId", emp_id):
+            if not await check_if_exists_in_db("employees", "empId", emp_id):
                 return False
             else:
-                reporting_employees = read_fields_from_record(
+                if len(await read_by_multiple_attributes("employees", "*", ["user_type", "empId"], ["admin", emp_id])) == 1:
+                    raise ValueError("Deleting last admin not allowed")
+                reporting_employees = await read_fields_from_record(
                     "relations", "employee", "reports_to", [emp_id]
                 )
-                reporting_to = read_fields_from_record(
+                reporting_to = await read_fields_from_record(
                     "relations", "reports_to", "employee", [emp_id]
                 )
                 reporting_to = reporting_to[0][0]
@@ -107,16 +125,17 @@ class Admin(Employee):
                     )
                 )
                 for reporting_employee in reporting_employees:
-                    write_to_table(
+                    await write_to_table(
                         "relations",
                         {"employee": reporting_employee, "reports_to": reporting_to},
                     )
                 await delete_from_table("relations", "reports_to", emp_id)
                 await self.delete_employee(emp_id)
                 return True
-
-        except Exception as e:
-            raise e
+        except ValueError as err:
+            raise err
+        except Exception as err:
+            raise err
 
     async def delete_employee(self, emp_id):
         return await delete_from_table("employees", "empId", emp_id)

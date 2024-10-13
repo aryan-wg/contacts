@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException
 from .entities.admin.admin import Admin
 from .entities.hr.hr_employee import Hr_employee
 from .entities.worker.worker import Worker
-from .utils.db_utils import read_fields_from_record
+from .utils.async_pg_db_utils import read_fields_from_record
 from .utils.general_utils import check_pass
 from datetime import datetime, timezone, timedelta
 from .types.general_types import Token
@@ -18,9 +18,12 @@ ALGORITHM = "HS256"
 
 
 class Auth:
-    def login(self, empId, password):
+    async def login(self, empId, password):
         try:
-            user = read_fields_from_record("employees", "*", "empId", [empId])
+            print("login ke andar")
+            user = await read_fields_from_record("employees", "*", "empid", [empId])
+            # user = await read_fields_from_record("employees", "*", "phone", [9999999999])
+            print("login ke user lane ke bad",user)
             if user:
                 _, name, phone, email, address, hashed_db, user_type = user[0]
                 employee_info = (empId, name, phone, email, address)
@@ -32,10 +35,12 @@ class Auth:
                 else:
                     return None
         except NameError as err:
-            return err
+            raise err
+        except Exception as err:
+            raise err
 
     def create_access_token(self, empId: int, user_type: str, expires_delta: timedelta):
-        encode = {"sub": empId, "user_type": user_type}
+        encode = {"empId": empId, "user_type": user_type}
         expires = datetime.now(timezone.utc) + expires_delta
         encode.update({"exp": expires})
         return Token(

@@ -12,8 +12,8 @@ from ..utils.validations_utils import (
 
 Password = Annotated[str, AfterValidator(check_password_format)]
 Email = Annotated[str, AfterValidator(check_email_format)]
-PostalCode = Annotated[int, AfterValidator(check_phone_format)]
-Phone = Annotated[str, AfterValidator(check_pin_code_format)]
+Phone = Annotated[int, AfterValidator(check_phone_format)]
+PostalCode = Annotated[int, AfterValidator(check_pin_code_format)]
 
 
 class ChangePassBody(BaseModel):
@@ -49,3 +49,12 @@ class EmployeeInfo(BaseModel):
     address: Address
     # reports to should be optional or somone can say its 0
     reports_to: Optional[int]
+
+# class EmployeeInfo(BaseModel):
+#     password: str
+#     user_type: UserTypeEnum
+#     name: str
+#     phone: int 
+#     email: str
+#     Address: Address
+#     reports_to: int

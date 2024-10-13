@@ -42,40 +42,46 @@ class Employee(ABC):
         }
         return profile
 
-    def search_other_employee(self, name):
-        data = match_string_in_field(
+    async def search_other_employee(self, name):
+        data = await match_string_in_field(
             "employees", "empId, name, phone, email", "name", name
         )
         return data
 
-    def update_password(self, old_pass, new_pass,empId):
-        hashed_pass = read_fields_from_record(
+    async def update_password(self, old_pass, new_pass, empId):
+        hashed_pass = await read_fields_from_record(
             "employees", "password", "empId", [empId]
-        )[0][0]
+        )
+        if hashed_pass:
+            hashed_pass = hashed_pass[0][0]
         old_check = check_pass(old_pass, hashed_pass)
         if old_check:
             new_hashed = hash_pass(new_pass)
-            return update_one_record(
-                "employees", {"password": new_hashed}, "empId",empId
+            return await update_one_record(
+                "employees", {"password": new_hashed}, "empId", empId
             )
         else:
             print("Old password did not match \n")
             return False
 
-    def request_self_info_change(self, updated_info,empId):
+    async def request_self_info_change(self, updated_info, empId):
         # created_by integer NOT NULL, updated_info text NOT NULL, hr_assigned integer, approved_by_hr integer NOT NULL, remark text, created_at integer NOT NULL, update_committed integer NOT NULL
-        all_hr = read_fields_from_record("employees", "empId", "user_type", ["hr"])
-        try :
+        all_hr = await read_fields_from_record(
+            "employees", "empId", "user_type", ["hr"]
+        )
+        try:
             all_hr = [tuple_emp_id[0] for tuple_emp_id in all_hr]
             if not all_hr:
                 raise ValueError("No HR employee to assign request to.")
             else:
-                assigned_hr = random.choice(all_hr) 
+                assigned_hr = random.choice(all_hr)
                 if len(all_hr) == 1:
                     if all_hr[0] == empId:
-                        print("\nWarning - you are the only HR hence you will be approving your own request\n")
+                        print(
+                            "\nWarning - you are the only HR hence you will be approving your own request\n"
+                        )
                         assigned_hr = empId
-                else :
+                else:
                     while assigned_hr == empId:
                         assigned_hr = random.choice(all_hr)
                 request = {
@@ -87,7 +93,7 @@ class Employee(ABC):
                     "request_status": "hr_assigned",
                     "remark": None,
                 }
-                created_request = write_to_table("requests", request)
+                created_request = await write_to_table("requests", request)
                 print("updated user will be ", created_request)
                 return True
 
@@ -105,4 +111,3 @@ class Employee(ABC):
 # email = "aryan@gmail.com"
 # address = {"street":"Delhi road","city":"gr noida","state":"Up","postal code":201306,"country":"IND"}
 # new_emp = employee(name,phone,email,address)
-

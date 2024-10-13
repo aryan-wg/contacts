@@ -103,12 +103,16 @@ paths:
             schema:
               $ref: "#/components/schemas/newEmployee"
       responses:
-        200:
-          $ref: "#/components/responses/200Success"
+        201:
+          $ref: "#/components/responses/201EmployeeCreated"
         400:
-          $ref: "#/components/responses/400BadRequest"
+          $ref: "#/components/responses/400FieldValidationFailed"
         401:
           $ref: "#/components/responses/401Unauthorized"
+        403:
+          $ref: "#/components/responses/403Forbidden"
+        409:
+          $ref: "#/components/responses/409EmailConflict"
         500:
           $ref: "#/components/responses/500InternalServerError"
   /employee/{emp_id}:
@@ -139,16 +143,21 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         403:
           $ref: "#/components/responses/403Forbidden"
+        404:
+          $ref: "#/components/responses/404NotFound"
+        405:
+          $ref: "#/components/responses/405NotAllowed"
         500:
           $ref: "#/components/responses/500InternalServerError"
         
-  /employee/{emp_id}/request:
+  /employee/{emp_id}/requests:
     get:
       tags: 
         - Employee
       summary: Returns a list of requests created by employee 
       parameters:
       - $ref: '#/components/parameters/request_status'
+      - $ref: "#/components/parameters/emp_id"
       security:
         - contacts_auth: []
       responses:
@@ -160,6 +169,8 @@ paths:
           $ref: "#/components/responses/401Unauthorized"
         403:
           $ref: "#/components/responses/403Forbidden"
+        404:
+          $ref: "#/components/responses/404NotFound"
         500:
           $ref: "#/components/responses/500InternalServerError"
 
@@ -591,6 +602,23 @@ components:
             required:
               - success
               - message
+    201EmployeeCreated:
+      description: Employee created response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              message:
+                type: string
+              emp_id: 
+                type: integer
+            required:
+              - success
+              - message
+              - emp_id
 
     200requests:
       description: All requests that fall in the query catagories 
@@ -622,6 +650,22 @@ components:
                 examples:
                   - Bad request 
 
+    400FieldValidationFailed:
+      description: "Some or all of the fields provided in the request are ivalid"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success: 
+                type: boolean
+                examples:
+                  - false
+              error:
+                type: String
+                examples:
+                  - Invalid value for email
+
     401Unauthorized:
       description: "Not authorized"
       content:
@@ -633,7 +677,7 @@ components:
                 type: boolean
                 examples:
                   - false
-              message:
+              error:
                 type: string
                 examples:
                   - Not logged in              
@@ -649,10 +693,59 @@ components:
                 type: boolean
                 examples:
                   - false
-              message:
+              error:
                 type: string
                 examples:
                   - Restricted route
+
+    404NotFound:
+      description: "Resource requested is not found"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                examples:
+                  - false
+              error:
+                type: string
+                examples:
+                  - Requested resource not found
+
+    405NotAllowed:
+      description: "Method requested on the resource not allowed"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                examples:
+                  - false
+              error:
+                type: string
+                examples:
+                  - Requested resource can not be deleted 
+
+    409EmailConflict:
+      description: "User already exists"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                examples:
+                  - false
+              message:
+                type: string
+                examples:
+                  - User with email test@test.com already exists
+
 
     500InternalServerError:
       description: "Internal server error"

@@ -1,8 +1,10 @@
-from src.routers.admin_router import admin_router 
+from src.routers.admin_router import admin_router
 from src.routers.auth_router import auth_router
 from src.routers.employee_router import employee_router
 from fastapi.middleware.cors import CORSMiddleware
-from src.utils.async_pg_db_utils import create_tables
+from src.database.db_init import create_tables
+from src.execptions.CustomExceptions import exceptions
+
 # from src.database.db_setup import create_tables, insert_sample_data
 # from src.ui.admin_ui import AdminUi
 # from src.ui.worker_ui import WorkerUi
@@ -17,15 +19,20 @@ import yaml
 
 app = FastAPI()
 
+for exception,handler in exceptions:
+    app.add_exception_handler(exception,handler)
+
 @app.on_event("startup")
 async def startup_functions():
     await create_tables()
+
 
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     with open("openapi.yaml", "r") as f:
         return yaml.safe_load(f)
+
 
 app.openapi = custom_openapi
 
@@ -36,12 +43,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(auth_router,tags=["auth"], prefix="/v1/auth")
-app.include_router(employee_router,tags=["employee"],prefix = "/v1/employee")
+app.include_router(auth_router, tags=["auth"], prefix="/v1/auth")
+app.include_router(employee_router, tags=["employee"], prefix="/v1/employee")
+
+
 @app.get("/test")
 def test():
-    return {"Status":"API running"}
-
+    return {"Status": "API running"}
 
 
 # def main():
@@ -51,7 +59,7 @@ def test():
 #     user_obj = active_auth_ui.login()
 #     active_user_ui = None
 #     if user_obj.user_type == "admin":
-#         # here the user_obj is a good example of dependency inverison  
+#         # here the user_obj is a good example of dependency inverison
 #         active_user_ui = AdminUi(user_obj)
 #     elif user_obj.user_type == "worker":
 #         active_user_ui = WorkerUi(user_obj)

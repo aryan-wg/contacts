@@ -26,11 +26,10 @@ def get_address_input():
 
 
 def hash_pass(password):
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(12)).decode("utf-8")
-
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(12))
 
 def check_pass(password, hashed_db):
-    return bcrypt.checkpw(password.encode(), hashed_db.encode())
+    return bcrypt.checkpw(password.encode(), hashed_db)
 
 
 def format_for_display(keys, original_data):

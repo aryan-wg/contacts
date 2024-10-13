@@ -1,5 +1,5 @@
 from datetime import datetime
-from .db_utils import read_fields_from_record
+from .async_pg_db_utils import read_fields_from_record
 
 
 def parse_requests(requests):
@@ -20,7 +20,7 @@ def parse_requests(requests):
     return requests_parsed
 
 
-def populate_requests(requests):
+async def populate_requests(requests):
     populated = []
     for request in requests:
         time_stamp = datetime.fromtimestamp(request["created_at"])
@@ -28,7 +28,7 @@ def populate_requests(requests):
         if not request["update_committed_at"] == 0:
             time_stamp = datetime.fromtimestamp(request["update_committed_at"])
             request["update_committed_at"] = time_stamp.strftime("%Y-%m-%d %H:%M:%S")
-        record = read_fields_from_record(
+        record = await read_fields_from_record(
             "employees",
             "name",
             "empId",
@@ -53,7 +53,7 @@ def parse_relations(relations):
     return relations_parsed
 
 
-def populate_relations(relations):
+async def populate_relations(relations):
     populated = []
     for relation in relations:
         if relation["reports_to"] == 0:
@@ -66,7 +66,7 @@ def populate_relations(relations):
             relation["reports_to"] = reports_to
 
         else:
-            reports_to_info = read_fields_from_record(
+            reports_to_info = await read_fields_from_record(
                 "employees", "name, email, phone", "empId", [relation["reports_to"]]
             )
             if reports_to_info:
@@ -78,7 +78,7 @@ def populate_relations(relations):
                 }
                 relation["reports_to"] = reports_to
 
-        emp_info = read_fields_from_record(
+        emp_info = await read_fields_from_record(
             "employees", "name, email, phone", "empId", [relation["empId"]]
         )
         employee = {

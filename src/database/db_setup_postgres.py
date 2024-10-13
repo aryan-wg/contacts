@@ -12,7 +12,6 @@ async def get_con():
 
 
 
-
 changed_values_dict = {
     "name": "Akamboj",
     "phone": 12394823790,

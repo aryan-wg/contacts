@@ -7,6 +7,7 @@ from fastapi import Depends, HTTPException
 from .entities.admin.admin import Admin
 from .entities.hr.hr_employee import Hr_employee
 from .entities.worker.worker import Worker
+from .entities.employee.employee import Employee
 from .utils.async_pg_db_utils import read_fields_from_record
 from .utils.general_utils import check_pass
 from datetime import datetime, timezone, timedelta
@@ -20,10 +21,7 @@ ALGORITHM = "HS256"
 class Auth:
     async def login(self, empId, password):
         try:
-            print("login ke andar")
             user = await read_fields_from_record("employees", "*", "empid", [empId])
-            # user = await read_fields_from_record("employees", "*", "phone", [9999999999])
-            print("login ke user lane ke bad",user)
             if user:
                 _, name, phone, email, address, hashed_db, user_type = user[0]
                 employee_info = (empId, name, phone, email, address)
@@ -40,7 +38,7 @@ class Auth:
             raise err
 
     def create_access_token(self, empId: int, user_type: str, expires_delta: timedelta):
-        encode = {"empId": empId, "user_type": user_type}
+        encode = {"emp_id": empId, "user_type": user_type}
         expires = datetime.now(timezone.utc) + expires_delta
         encode.update({"exp": expires})
         return Token(
@@ -62,9 +60,12 @@ class Auth:
                         case "admin":
                             return Admin()
                         case "worker":
-                            return Worker()
+                            return Worker(decoded_token["emp_id"])
                         case "hr":
-                            return Hr_employee()
+                            return Hr_employee(decoded_token["emp_id"])
+                elif token_obj["user_type"] == "basic":
+                    print(decoded_token)
+                    return Employee(decoded_token["emp_id"])
                 else:
                     raise HTTPException(status_code=403, detail="Forbidden")
             except JWTError as err:

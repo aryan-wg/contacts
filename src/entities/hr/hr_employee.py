@@ -12,8 +12,8 @@ from pprint import pprint
 
 
 class Hr_employee(Worker):
-    # def __init__(self, employee_info):
-    #     super().__init__((*employee_info, "hr"))
+    def __init__(self, emp_id):
+        super().__init__(emp_id)
 
     def get_pending_requests(self,empId):
         # all of the requests that have a status == hr_assigned and assigned_hr == self.empId are pending_requests

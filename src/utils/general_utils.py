@@ -4,6 +4,12 @@ import bcrypt
 import json
 
 
+def csv_to_list_of_alpha_num_str(csv_str):
+    items_list = [item.replace(" ", "") for item in csv_str.split(",")]
+    items_list = [item for item in items_list if item != "" and item.isalnum()]
+    return items_list
+
+
 def get_address_input():
     address_dict = {}
 
@@ -27,6 +33,7 @@ def get_address_input():
 
 def hash_pass(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt(12))
+
 
 def check_pass(password, hashed_db):
     return bcrypt.checkpw(password.encode(), hashed_db)

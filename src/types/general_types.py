@@ -50,6 +50,12 @@ class EmployeeInfo(BaseModel):
     # reports to should be optional or somone can say its 0
     reports_to: Optional[int]
 
+class ChangeInfoRequestBody(BaseModel):
+    name: str
+    phone: Phone
+    email: Email
+    address: Address
+
 # class EmployeeInfo(BaseModel):
 #     password: str
 #     user_type: UserTypeEnum

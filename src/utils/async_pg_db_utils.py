@@ -126,10 +126,14 @@ async def check_if_exists_in_db(table, key_type, key):
 async def match_string_in_field(table, get_fields_str, field, match):
     con = await get_con()
     query_string = (
-        f"SELECT {get_fields_str} FROM {table} WHERE {field} LIKE '{match}%' LIMIT 10"
+        f"SELECT {get_fields_str} FROM {table} WHERE {field} LIKE $1 LIMIT 10"
     )
-    data = dict(await con.fetch(query_string))
-    # print(data)
+    print(query_string)
+    returned = await con.fetch(query_string, *[f"{match}%"])
+    # this % sign is a wildcard for allowing everything that starts with the query string
+    data = []
+    for item in returned:
+        data.append(dict(item))
     return data
 
 
@@ -179,8 +183,8 @@ async def read_by_multiple_att_and_keys(table, fields, key_types, keys):
             where_query_str += " and"
 
     complete_query = f"SELECT {fields} FROM {table} WHERE {where_query_str}"
-    print(complete_query)
-    data = dict(await con.fetch(complete_query, *query_tuple))
+    received = await con.fetch(complete_query, *query_tuple)
+    data = [dict(item) for item in received]
     return data
 
 

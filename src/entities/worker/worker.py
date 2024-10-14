@@ -12,23 +12,23 @@ class Worker(Employee):
     #     elif len(employee_info) == 6:
     #         super().__init__(employee_info)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, emp_id):
+        super().__init__(emp_id)
 
-    def reports_to(self, empId):
-        data = read_fields_from_record("relations", "*", "employee", [empId])
+    async def reports_to(self, empId):
+        data = await read_fields_from_record("relations", "*", "employee", [empId])
         if data:
             data = parse_relations(data)
-            data = populate_relations(data)
+            data = await populate_relations(data)
             return data[0]
         else:
             return None
 
-    def reported_by(self, empId):
-        data = read_fields_from_record("relations", "*", "reports_to", [empId])
+    async def reported_by(self, empId):
+        data = await read_fields_from_record("relations", "*", "reports_to", [empId])
         if data:
             data = parse_relations(data)
-            data = populate_relations(data)
+            data = await populate_relations(data)
             return data
         else:
             return None

@@ -39,7 +39,7 @@ async def login(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]):
         if auth_token:
             return auth_token
         else:
-            raise HTTPException(status_code = 400, detail="Invalid userid or password")
+            raise HTTPException(status_code = 401, detail="Invalid userid or password")
     except HTTPException as err:
         raise HTTPException(status_code = err.status_code,detail = err.detail)
     except Exception as err:

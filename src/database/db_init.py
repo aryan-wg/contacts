@@ -40,7 +40,7 @@ async def create_first_admin():
     data = {
         "name": "Admin",
         "phone": 9999999999,
-        "email": "admin2@admin.com",
+        "email": "admin@admin.com",
         "address": {
             "city": "admin",
             "street": "admin",

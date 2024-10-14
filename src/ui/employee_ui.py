@@ -61,7 +61,7 @@ class EmployeeUi:
         worker_dict  = email_input(worker_dict)
         worker_dict["address"] = get_address_input()
 
-        success = self.employee.request_self_info_change(json.dumps(worker_dict))
+        success = self.employee.request_self_info_change(worker_dict)
         if success:
             print("Request created ")
             self.see_my_profile()

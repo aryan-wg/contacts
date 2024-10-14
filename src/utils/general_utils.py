@@ -4,9 +4,8 @@ import bcrypt
 import json
 
 
-def csv_to_list_of_alpha_num_str(csv_str):
+def csv_to_list(csv_str):
     items_list = [item.replace(" ", "") for item in csv_str.split(",")]
-    items_list = [item for item in items_list if item != "" and item.isalnum()]
     return items_list
 
 

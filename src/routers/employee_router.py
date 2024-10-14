@@ -3,7 +3,7 @@ import json
 from typing import Annotated, final
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import ValidationError
-from ..utils.general_utils import csv_to_list_of_alpha_num_str
+from ..utils.general_utils import csv_to_list
 
 from ..execptions.HttpExceptions import (
     InvalidValueErr,
@@ -19,6 +19,7 @@ from ..entities.admin.admin import Admin
 from ..types.general_types import EmployeeInfo, ChangeInfoRequestBody
 
 employee_router = APIRouter()
+
 
 @employee_router.post("/", status_code=201)
 async def create_employee(
@@ -56,7 +57,7 @@ async def search_employee(
     try:
         pass
         data = await baisc_employee_obj.search_other_employee(query_username)
-        return data
+        return {"success": True, "data": data}
     except Exception as err:
         raise InternalServerErr(err)
     finally:
@@ -84,22 +85,16 @@ async def remove_employee(
         del admin_obj
 
 
-@employee_router.post("/{emp_id}/request", status_code=201)
+@employee_router.post("/request", status_code=201)
 async def create_request(
-    emp_id: int,
     request_info: ChangeInfoRequestBody,
     employee_obj: Annotated[Employee, Depends(employee_factory)],
 ):
     try:
-        if not employee_obj.emp_id == emp_id:
-            raise ForbiddenErr(f"You can't create a request for employee id {emp_id}")
-        else:
-            request_id = await employee_obj.request_self_info_change(
-                request_info.model_dump(), emp_id
-            )
-            return {"success": True, "request_id": request_id}
-    except ForbiddenErr as err:
-        raise ForbiddenErr(err.detail)
+        request_id = await employee_obj.request_self_info_change(
+            request_info.model_dump(), employee_obj.emp_id
+        )
+        return {"success": True, "request_id": request_id}
     except ValueError as err:
         raise InvalidValueErr(err)
     except Exception as err:
@@ -108,36 +103,46 @@ async def create_request(
         del employee_obj
 
 
-# not doneeee
-@employee_router.get("/{emp_id}/request", status_code=200)
-async def get_requests(
-    emp_id: int,
-    status: str | None,
+@employee_router.get("/request", status_code=200)
+async def get_my_requests(
     employee_obj: Annotated[Employee, Depends(employee_factory)],
+    status: str | None = None,
 ):
     try:
         status_list = None
         if status:
-            status_list = csv_to_list_of_alpha_num_str(status)
-            status_list = [item for item in status_list if item in ]
+            status_list = csv_to_list(status)
+            status_list = [
+                item
+                for item in status_list
+                if item in ["approved_by_hr", "hr_assigned", "committed", "rejected"]
+            ]
             if len(status_list) == 0:
                 raise InvalidValueErr("Request status query string is invalid")
         else:
-            status_list = ["approved_by_hr","hr_assigned","committed","rejected"]
+            status_list = ["approved_by_hr", "hr_assigned", "committed", "rejected"]
 
         data = await employee_obj.get_my_requests(status_list)
-        return data
+        return {"success": True, "data": data}
     except InvalidValueErr as err:
         raise InvalidValueErr(err.detail)
     except ValueError as err:
         raise NotFoundErr(err)
     except Exception as err:
         raise InternalServerErr(err)
+    finally:
+        del employee_obj
 
 
-@employee_router.get("/{emp_id}", status_code=200)
-async def get_my_profile(employee):
-    pass
+@employee_router.get("/profile", status_code=200)
+async def get_my_profile(employee_obj: Annotated[Employee, Depends(employee_factory)]):
+    try:
+        profile_info = await employee_obj.get_profile_info()
+        return {"success": True, "profile_info": profile_info}
+    except ValueError as err:
+        raise NotFoundErr(err)
+    except Exception as err:
+        raise InternalServerErr(err)
 
 
 def request_update_controler(employee, update_info):

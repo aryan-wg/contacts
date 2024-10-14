@@ -12,9 +12,9 @@ servers:
 
 tags:
   - name: Employee
-    description: Routes that employees can access
-  - name: General
-    description: These are the routes that can be accessed by any user
+    description: Routes that are specific to employees resource
+  # - name: General
+  #   description: These are the routes that can be accessed by any user
   - name: Auth
     description: These are the routes employees hit when dealing with auth features 
 
@@ -84,7 +84,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/emp_info"
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    examples:
+                      - True
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/emp_info"
         401:
           $ref: "#/components/responses/401Unauthorized"
         500:
@@ -150,62 +159,31 @@ paths:
         500:
           $ref: "#/components/responses/500InternalServerError"
 
+  /employee/profile:
     get:
       security:
         - contacts_auth: []
       tags:
         - Employee
-      parameters:
-        - $ref: "#/components/parameters/emp_id"
-
-      summary: Gets employee's profile info 
+      summary: Gets employee's own profile info 
       description: Endpoint fetches the profile info of an employee can only be accessed by user themself
       responses:
         200:
-          description: A simple response containing address, employee Id, name, phone number and email 
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  profileInfo:
-                    type: object
-                    properties:
-                      name:
-                        $ref: "#/components/schemas/name"
-                      email:
-                        $ref: "#/components/schemas/email"
-                      phone:
-                        $ref: "#/components/schemas/phone"
-                      address:
-                        $ref: "#/components/schemas/address"
-                      emp_id:
-                        $ref: "#/components/schemas/emp_id"
-
-                         
-        400:
-          $ref: "#/components/responses/400BadRequest"
+          $ref: "#/components/responses/200ProfileInfo"
         401:
           $ref: "#/components/responses/401Unauthorized"
-        403:
-          $ref: "#/components/responses/403Forbidden"
         404:
           $ref: "#/components/responses/404NotFound"
-        405:
-          $ref: "#/components/responses/405NotAllowed"
         500:
           $ref: "#/components/responses/500InternalServerError"
         
-  /employee/{emp_id}/request:
+  /employee/request:
     get:
       tags: 
         - Employee
       summary: Returns a list of requests created by employee 
       parameters:
       - $ref: '#/components/parameters/request_status'
-      - $ref: "#/components/parameters/emp_id"
       security:
         - contacts_auth: []
       responses:
@@ -226,8 +204,6 @@ paths:
       tags:
         - Employee
       summary: Creates a new request in the db
-      parameters:
-        - $ref: "#/components/parameters/emp_id"
       requestBody:
         $ref: "#/components/requestBodies/create_request_body"
       security:
@@ -253,14 +229,21 @@ paths:
         - Employee
       summary: Returns the employee to whom an employee with id ==  employeeId reports
       parameters:
-        - $ref: "#/components/parameters/emp-id"
+        - $ref: "#/components/parameters/emp_id"
       responses:
         200:
           description: Basic contact info of the user  
           content:
             application/json:
-              schema:  
-                $ref: "#/components/schemas/emp_info"
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    examples:
+                      - True
+                  data:
+                    $ref: "#/components/schemas/emp_info"
         400:
           $ref: '#/components/responses/400BadRequest'
         401:
@@ -268,7 +251,7 @@ paths:
         500:
           $ref: "#/components/responses/500InternalServerError"
     
-    post:
+    put:
       security:
         - contacts_auth: []
       tags:
@@ -293,28 +276,31 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         500:
           $ref: "#/components/responses/500InternalServerError"
-  /reported_by:
+  /employee/{emp_id}/reported_by:
     get:
       security:
         - contacts_auth: []
       tags:
-      - General
+        - Employee 
       summary: Returns an array of employees that report to employee with id == employeeId
       parameters:
-        - name: employeeId
-          required: true
-          in: query
-          schema:
-            type: integer
+        - $ref: "#/components/parameters/emp_id"
       responses:
         200:
           description: Basic contact info of the users
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/searched_emp_info"
+                type: object 
+                properties:
+                  success:
+                    type: boolean 
+                    examples: 
+                      - True
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/emp_info"
     
 
 
@@ -408,14 +394,14 @@ components:
     request: 
       type: object
       properties: 
-        reqId:
+        request_id:
           type: integer
         created_by:
-          $ref: "#/components/schemas/employeeId"
+          $ref: "#/components/schemas/name"
         updated_info:
           $ref: "#/components/schemas/updatedInfo"
         assigned_hr:
-          $ref: "#/components/schemas/employeeId"
+          $ref: "#/components/schemas/name"
         created_at:
           $ref: "#/components/schemas/timeStamp"
         update_committed_at:
@@ -424,7 +410,9 @@ components:
           type: string
           enum: ["hr_assigned","committed","rejected","approved_by_hr"]
         remark: 
-          type: string
+          oneOf:
+           - type: string 
+           - type: "null" 
       required:
         - reqId
         - created_by
@@ -473,7 +461,7 @@ components:
         - city
         - state
         - country
-    employeeId:
+    emp_id:
       name: employeeId
       type: integer
       examples:
@@ -548,10 +536,6 @@ components:
       type: string
       examples:
         - Test user
-    empId: 
-      type: integer
-      examples: 
-        - 24
     email:
       type: string
       examples:
@@ -615,7 +599,7 @@ components:
     request_status:
       name: status
       in: query
-      required: true 
+      required: false 
       description: status of the request can be a csv string of committed,rejected, approved_by_hr, hr_assigned 
       schema:
         type: string
@@ -640,7 +624,7 @@ components:
       in: path
       required: true
       schema:
-        type: string
+        type: integer 
    
   responses:
     200Success:
@@ -687,6 +671,28 @@ components:
               - success
               - request_id 
 
+    200ProfileInfo:
+      description: A simple response containing address, employee Id, name, phone number and email 
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              profile_info:
+                type: object
+                properties:
+                  name:
+                    $ref: "#/components/schemas/name"
+                  email:
+                    $ref: "#/components/schemas/email"
+                  phone:
+                    $ref: "#/components/schemas/phone"
+                  address:
+                    $ref: "#/components/schemas/address"
+                  emp_id:
+                    $ref: "#/components/schemas/emp_id"
     200requests:
       description: All requests that fall in the query catagories 
       content:

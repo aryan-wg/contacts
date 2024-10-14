@@ -2,6 +2,8 @@ from abc import abstractmethod, ABC
 import json
 import time
 
+from ...utils.parsing_populating_utils import parse_requests, populate_requests
+
 from ...utils.general_utils import check_pass, hash_pass
 from ...utils.async_pg_db_utils import (
     match_string_in_field,
@@ -14,7 +16,7 @@ from math import ceil
 import random
 
 
-class Employee():
+class Employee:
     # def __init__(self, employee_info):
     #     empId, name, phone, email, json_str_address, user_type = employee_info
     #     self.name = name
@@ -30,18 +32,25 @@ class Employee():
     #     # print(self.name,self.phone,self.email,self.address)
     #
 
-    def __init__(self,emp_id):
+    def __init__(self, emp_id):
         self.emp_id = emp_id
 
-    def get_profile_info(self):
-        profile = {
-            # "name": self.name,
-            # "phone": self.phone,
-            # "email": self.email,
-            # "empId": self.empId,
-            # "address": self.address,
-        }
-        return profile
+    async def get_profile_info(self):
+        data = await read_fields_from_record(
+            "employees", "name,phone,email,address", "empId", [self.emp_id]
+        )
+        if len(data) == 1:
+            data = data[0]
+            profile = {
+                "name": data[0],
+                "phone": data[1],
+                "email": data[2],
+                "address": json.loads(data[3]),
+                "emp_id": self.emp_id,
+            }
+            return profile
+        else:
+            raise ValueError("User does not exist")
 
     async def search_other_employee(self, name):
         data = await match_string_in_field(
@@ -66,8 +75,13 @@ class Employee():
             return False
 
     async def request_self_info_change(self, updated_info, empId):
-        is_request_in_progress = await read_by_multiple_att_and_keys("requests","created_by",["created_by","request_status"],[empId,["approved_by_hr","hr_assigned"]])
-        if not len(is_request_in_progress) == 0 :
+        is_request_in_progress = await read_by_multiple_att_and_keys(
+            "requests",
+            "created_by",
+            ["created_by", "request_status"],
+            [empId, ["approved_by_hr", "hr_assigned"]],
+        )
+        if not len(is_request_in_progress) == 0:
             raise ValueError("One request already under proccess")
         else:
             all_hr = await read_fields_from_record(
@@ -98,11 +112,19 @@ class Employee():
                 }
                 created_request = await write_to_table("requests", request)
                 print("updated user will be ", created_request)
-                return created_request[0] 
+                return created_request[0]
 
-    async def get_my_requests(self,current_status_list):
-        my_req = await read_by_multiple_att_and_keys("requests","created_by",["created_by","request_status"],[self.emp_id,current_status_list])
-        return my_req
+    async def get_my_requests(self, current_status_list):
+        requests = await read_by_multiple_att_and_keys(
+            "requests",
+            "*",
+            ["created_by", "request_status"],
+            [self.emp_id, current_status_list],
+        )
+        requests = parse_requests(requests)
+        requests = await populate_requests(requests)
+        return requests
+
     @abstractmethod
     def info():
         pass

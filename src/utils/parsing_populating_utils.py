@@ -1,4 +1,5 @@
 from datetime import datetime
+import json 
 from .async_pg_db_utils import read_fields_from_record
 
 
@@ -8,7 +9,7 @@ def parse_requests(requests):
         temp = {
             "request_id": request[0],
             "created_by": request[1],
-            "updated_info": request[2],
+            "updated_info": json.loads(request[2]),
             "assigned_hr": request[3],
             "remark": request[4],
             "created_at": request[5],

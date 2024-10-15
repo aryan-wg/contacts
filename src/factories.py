@@ -16,33 +16,36 @@ token_from_auth_header = OAuth2PasswordBearer(tokenUrl="/login")
 
 def admin_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
-        token_obj = {"token": token, "user_type": "admin"}
-        return Auth.validate_token_gen_obj(token_obj)
+        return Auth.validate_token_gen_obj({"token": token, "user_type": "admin"})
     except JWTError as err:
-        raise HTTPException(status_code=400, detail=str(err))
+        raise HTTPException(status_code=401, detail=str(err))
 
 
 def hr_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
-        token_obj = {"token": token, "user_type": "hr"}
-        return Auth.validate_token_gen_obj(token_obj)
+        return Auth.validate_token_gen_obj({"token": token, "user_type": "hr"})
     except JWTError as err:
-        raise HTTPException(status_code=400, detail=str(err))
+        raise HTTPException(status_code=401, detail=str(err))
 
 
 def worker_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
-        token_obj = {"token": token, "user_type": "worker"}
-        return Auth.validate_token_gen_obj(token_obj)
+        return Auth.validate_token_gen_obj({"token": token, "user_type": "worker"})
     except JWTError as err:
-        raise HTTPException(status_code=400, detail=str(err))
+        raise HTTPException(status_code=401, detail=str(err))
 
 def employee_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
-        token_obj = {"token":token,"user_type":"basic"}
-        return Auth.validate_token_gen_obj(token_obj)
+        return Auth.validate_token_gen_obj({"token":token,"user_type":"basic"})
     except JWTError as err:
-        raise HTTPException(status_code=400,detail=str(err))
+        raise HTTPException(status_code=401,detail=str(err))
+
+
+def user_factory(token:str,allowed_users:list):
+    try:
+        return Auth.validate_token_gen_obj(token,allowed_users)
+    except JWTError as err:
+        raise HTTPException(status_code=401,detail=str(err))
 
 # token: Annotated[str, Depends(token_from_auth_header)],user_type:str
 
@@ -64,4 +67,4 @@ def employee_factory(token: Annotated[str, Depends(token_from_auth_header)]):
 #         #     raise HTTPException(status_code=403)
 #     # # return user
 #     except JWTError as err:
-#         raise HTTPException(status_code=400, detail=str(err))
+#         raise HTTPException(status_code=401, detail=str(err))

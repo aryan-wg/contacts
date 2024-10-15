@@ -126,7 +126,6 @@ async def match_string_in_field(table, get_fields_str, field, match):
     query_string = (
         f"SELECT {get_fields_str} FROM {table} WHERE {field} ILIKE $1 LIMIT 10"
     )
-    print(query_string)
     returned = await con.fetch(query_string, *[f"{match}%"])
     # this % sign is a wildcard for allowing everything that starts with the query string
     data = []

@@ -5,9 +5,9 @@ info:
   version : 2.0.0
 
 servers:
- - url: http://127.0.0.1:8000/v1
+ - url: http://127.0.0.1:8000/api/v1
    description: Production
- - url: http://127.0.0.1:8000/v2
+ - url: http://127.0.0.1:8000/api/v2
    description: Dev
 
 tags:
@@ -227,7 +227,7 @@ paths:
         - contacts_auth: []
       tags:
         - Employee
-      summary: Returns the employee to whom an employee with id ==  employeeId reports
+      summary: Returns the employee to whom an employee with id equal to emp_id reports
       parameters:
         - $ref: "#/components/parameters/emp_id"
       responses:
@@ -478,7 +478,7 @@ components:
     emp_info:
       type: object
       properties: 
-        id:
+        emp_id:
           $ref: "#/components/schemas/emp_id"
         name:
           $ref: "#/components/schemas/name"

@@ -23,8 +23,11 @@ class NotAllowedErr(HTTPException):
 
 class ForbiddenErr(HTTPException):
     def __init__(self,errorInfo):
-        print(errorInfo)
         super().__init__(status_code=403,detail=errorInfo)
+
+class UnauthorizedErr(HTTPException):
+    def __init__(self,errorInfo):
+        super().__init__(status_code=401,detail=errorInfo)
 
 async def standard_err_handler(request: Request, exception: HTTPException):
     return JSONResponse(
@@ -47,6 +50,7 @@ exceptions = [
     (InvalidValueErr, standard_err_handler),
     (NotFoundErr, standard_err_handler),
     (NotAllowedErr,standard_err_handler),
+    (UnauthorizedErr,standard_err_handler),
     (ForbiddenErr,standard_err_handler),
     (RequestValidationError, pydantic_schema_err_handler),
 

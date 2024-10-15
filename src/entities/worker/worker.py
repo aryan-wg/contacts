@@ -1,5 +1,5 @@
 from ..employee.employee import Employee
-from ...utils.async_pg_db_utils import read_fields_from_record
+from ...utils.async_pg_db_utils import check_if_exists_in_db, read_fields_from_record
 from ...utils.parsing_populating_utils import parse_relations, populate_relations
 
 from pprint import pprint
@@ -16,13 +16,16 @@ class Worker(Employee):
         super().__init__(emp_id)
 
     async def reports_to(self, empId):
-        data = await read_fields_from_record("relations", "*", "employee", [empId])
-        if data:
-            data = parse_relations(data)
-            data = await populate_relations(data)
-            return data[0]
-        else:
-            return None
+        if not await check_if_exists_in_db("employees","empId",empid):
+            raise ValueError("Employee does not exist.")
+        else :
+            data = await read_fields_from_record("relations", "*", "employee", [empId])
+            if data:
+                data = parse_relations(data)
+                data = await populate_relations(data)
+                return data[0]
+            else:
+                return None
 
     async def reported_by(self, empId):
         data = await read_fields_from_record("relations", "*", "reports_to", [empId])

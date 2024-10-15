@@ -1,7 +1,7 @@
 import json
 
 from typing import Annotated, final
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter,Request, Depends, HTTPException
 from pydantic import ValidationError
 from ..utils.general_utils import csv_to_list
 
@@ -23,8 +23,9 @@ employee_router = APIRouter()
 
 @employee_router.post("/", status_code=201)
 async def create_employee(
-    new_employee: EmployeeInfo, admin_obj: Annotated[Admin, Depends(admin_factory)]
+        new_employee: EmployeeInfo, request:Request
 ):
+    admin_obj = request.state.user_obj
     try:
         employee_info_dict = new_employee.dict()
         employee_info_dict["address"] = json.dumps(employee_info_dict["address"])
@@ -52,11 +53,15 @@ async def create_employee(
 @employee_router.get("/", status_code=200)
 async def search_employee(
     query_username: str,
-    baisc_employee_obj: Annotated[Worker, Depends(employee_factory)],
+    request: Request
 ):
+    baisc_employee_obj = request.state.user_obj
     try:
         pass
         data = await baisc_employee_obj.search_other_employee(query_username)
+        for item in data:
+            item["emp_id"] = item["empid"]
+            del item["empid"]
         return {"success": True, "data": data}
     except Exception as err:
         raise InternalServerErr(err)
@@ -66,8 +71,9 @@ async def search_employee(
 
 @employee_router.delete("/{emp_id}", status_code=204)
 async def remove_employee(
-    emp_id: int, admin_obj: Annotated[Admin, Depends(admin_factory)]
+        emp_id: int, request: Request
 ):
+    admin_obj = request.state.user_obj
     try:
         if await admin_obj.remove_employee(emp_id):
             return True
@@ -88,8 +94,9 @@ async def remove_employee(
 @employee_router.post("/request", status_code=201)
 async def create_request(
     request_info: ChangeInfoRequestBody,
-    employee_obj: Annotated[Employee, Depends(employee_factory)],
+    requst: Request
 ):
+    employee_obj = requst.state.user_obj
     try:
         request_id = await employee_obj.request_self_info_change(
             request_info.model_dump(), employee_obj.emp_id
@@ -105,9 +112,10 @@ async def create_request(
 
 @employee_router.get("/request", status_code=200)
 async def get_my_requests(
-    employee_obj: Annotated[Employee, Depends(employee_factory)],
+    request: Request,
     status: str | None = None,
 ):
+    employee_obj = request.state.user_obj
     try:
         status_list = None
         if status:
@@ -135,7 +143,8 @@ async def get_my_requests(
 
 
 @employee_router.get("/profile", status_code=200)
-async def get_my_profile(employee_obj: Annotated[Employee, Depends(employee_factory)]):
+async def get_my_profile(request:Request):
+    employee_obj = request.state.user_obj 
     try:
         profile_info = await employee_obj.get_profile_info()
         return {"success": True, "profile_info": profile_info}
@@ -144,6 +153,18 @@ async def get_my_profile(employee_obj: Annotated[Employee, Depends(employee_fact
     except Exception as err:
         raise InternalServerErr(err)
 
+@employee_router.get("/{emp_id}/reports_to",status_code=200)
+async def get_reports_to(emp_id:int,request:Request):
+    worker_obj = request.state.user_obj
+    try:
+       data = await worker_obj.reports_to(emp_id)
+       return {"success":True,"data":data}
+    except ValueError as err:
+       raise NotFoundErr(err)
+    except Exception as e:
+        raise InternalServerErr(e)
+    finally:
+        del worker_obj
 
 def request_update_controler(employee, update_info):
     pass

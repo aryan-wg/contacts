@@ -47,15 +47,13 @@ class Auth:
         )
 
     @abstractmethod
-    def validate_token_gen_obj(token_obj: TokenObj):
-        if not token_obj:
+    def validate_token_gen_obj(token, allowed_user_types):
+        if not token:
             raise HTTPException(status_code=401, detail="Not authenticated")
         else:
             try:
-                decoded_token = jwt.decode(
-                    token_obj["token"], SECRET_KEY, algorithms=[ALGORITHM]
-                )
-                if token_obj["user_type"] == decoded_token["user_type"]:
+                decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                if decoded_token["user_type"] in allowed_user_types:
                     match decoded_token["user_type"]:
                         case "admin":
                             return Admin()
@@ -63,8 +61,8 @@ class Auth:
                             return Worker(decoded_token["emp_id"])
                         case "hr":
                             return Hr_employee(decoded_token["emp_id"])
-                elif token_obj["user_type"] == "basic":
-                    print(decoded_token)
+                elif "employee" in allowed_user_types :
+                    print("hello")
                     return Employee(decoded_token["emp_id"])
                 else:
                     raise HTTPException(status_code=403, detail="Forbidden")

@@ -47,7 +47,7 @@ def parse_relations(relations):
     for relation in relations:
         temp = {
             "reports_to": relation[0],
-            "empId": relation[1],
+            "emp_id": relation[1],
         }
         relations_parsed.append(temp)
 
@@ -60,7 +60,7 @@ async def populate_relations(relations):
         if relation["reports_to"] == 0:
             reports_to = {
                 "name": None,
-                "empId": None,
+                "emp_id": None,
                 "email": None,
                 "phone": None,
             }
@@ -73,18 +73,18 @@ async def populate_relations(relations):
             if reports_to_info:
                 reports_to = {
                     "name": reports_to_info[0][0],
-                    "empId": relation["reports_to"],
+                    "emp_id": relation["reports_to"],
                     "email": reports_to_info[0][1],
                     "phone": reports_to_info[0][2],
                 }
                 relation["reports_to"] = reports_to
 
         emp_info = await read_fields_from_record(
-            "employees", "name, email, phone", "empId", [relation["empId"]]
+            "employees", "name, email, phone", "empId", [relation["emp_id"]]
         )
         employee = {
             "name": emp_info[0][0],
-            "empId": relation["empId"],
+            "emp_id": relation["emp_id"],
             "email": emp_info[0][1],
             "phone": emp_info[0][2],
         }

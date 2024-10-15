@@ -190,13 +190,14 @@ async def update_one_record(table, values_dict, key_type, key):
     set_string = ""
     query_tuple_counter = 1
     query_tuple = ()
-    for key, value in values_dict.items():
-        set_string += f" {key} = ${query_tuple_counter},"
+    for dict_key, dict_value in values_dict.items():
+        set_string += f" {dict_key} = ${query_tuple_counter},"
         query_tuple_counter += 1
-        query_tuple += (value,)
+        query_tuple += (dict_value,)
 
     set_string = set_string[0:-1]
     query_string = f"update {table} set{set_string} WHERE {key_type} = {key} "
+    print(query_string)
     await con.fetch(query_string, *query_tuple)
     return True
 

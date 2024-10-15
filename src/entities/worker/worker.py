@@ -15,26 +15,29 @@ class Worker(Employee):
     def __init__(self, emp_id):
         super().__init__(emp_id)
 
-    async def reports_to(self, empId):
-        if not await check_if_exists_in_db("employees","empId",empid):
+    async def get_reports_to(self, emp_id):
+        if not await check_if_exists_in_db("employees","empId",emp_id):
             raise ValueError("Employee does not exist.")
         else :
-            data = await read_fields_from_record("relations", "*", "employee", [empId])
-            if data:
+            data = await read_fields_from_record("relations", "*", "employee", [emp_id])
+            if data[0][0]:
                 data = parse_relations(data)
                 data = await populate_relations(data)
                 return data[0]
             else:
-                return None
+                return [] 
 
-    async def reported_by(self, empId):
-        data = await read_fields_from_record("relations", "*", "reports_to", [empId])
-        if data:
-            data = parse_relations(data)
-            data = await populate_relations(data)
-            return data
+    async def get_reported_by(self, emp_id):
+        if not await check_if_exists_in_db("employees","empId",emp_id):
+            raise ValueError("Employee does not exist.")
         else:
-            return None
+            data = await read_fields_from_record("relations", "*", "reports_to", [emp_id])
+            if data:
+                data = parse_relations(data)
+                data = await populate_relations(data)
+                return data
+            else:
+                return [] 
 
     def info(self):
         return """

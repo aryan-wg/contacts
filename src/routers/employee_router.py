@@ -12,11 +12,11 @@ from ..execptions.HttpExceptions import (
     NotAllowedErr,
     ForbiddenErr,
 )
-from ..factories import admin_factory, worker_factory, employee_factory
-from ..entities.worker.worker import Worker
-from ..entities.employee.employee import Employee
-from ..entities.admin.admin import Admin
-from ..types.general_types import EmployeeInfo, ChangeInfoRequestBody
+# from ..factories import admin_factory, worker_factory, employee_factory
+# from ..entities.worker.worker import Worker
+# from ..entities.employee.employee import Employee
+# from ..entities.admin.admin import Admin
+from ..types.general_types import EmployeeInfo, ChangeInfoRequestBody,PutReportsToBody
 
 employee_router = APIRouter()
 
@@ -155,16 +155,29 @@ async def get_my_profile(request:Request):
 
 @employee_router.get("/{emp_id}/reports_to",status_code=200)
 async def get_reports_to(emp_id:int,request:Request):
-    worker_obj = request.state.user_obj
+    user_obj = request.state.user_obj
     try:
-       data = await worker_obj.reports_to(emp_id)
+       data = await user_obj.get_reports_to(emp_id)
        return {"success":True,"data":data}
     except ValueError as err:
        raise NotFoundErr(err)
     except Exception as e:
         raise InternalServerErr(e)
     finally:
-        del worker_obj
+        del user_obj
 
+@employee_router.put("/{emp_id}/reports_to",status_code=204)
+async def update_reports_to(emp_id:int,body_data:PutReportsToBody,request:Request):
+    admin_obj = request.state.user_obj
+    # print(body_data.reports_to)
+    try:
+        await admin_obj.update_reports_to(emp_id,body_data.reports_to)
+        return 
+    except ValueError as err:
+        raise InvalidValueErr(err)
+    except Exception as err:
+        raise InternalServerErr(err)
+    finally:
+        del admin_obj
 def request_update_controler(employee, update_info):
     pass

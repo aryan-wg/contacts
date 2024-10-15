@@ -140,6 +140,36 @@ class Admin(Employee):
     async def delete_employee(self, emp_id):
         return await delete_from_table("employees", "empId", emp_id)
 
+    async def get_reports_to(self,emp_id):
+        if not await check_if_exists_in_db("employees","empId",emp_id):
+            raise ValueError("Employee does not exist.")
+        else :
+            data = await read_fields_from_record("relations", "*", "employee", [emp_id])
+            if data[0][0]:
+                return {"emp_id":data[0][0]}
+            else:
+                return [] 
+
+    async def update_reports_to(self,emp_id,reports_to_emp_id):
+        try:
+            if await check_if_exists_in_db("employees","empid",emp_id):
+                if reports_to_emp_id and await check_if_exists_in_db("employees","empId",reports_to_emp_id):
+                    print("in normal update")
+                    return await update_one_record("relations",{"reports_to":reports_to_emp_id},"employee",emp_id)
+                elif not reports_to_emp_id:
+                    # will run in case when reports to user id is 0 (ie employee does not report to anyone)
+                    print("in top user update")
+                    print(emp_id)
+                    return await update_one_record("relations",{"reports_to":reports_to_emp_id},"employee",emp_id)
+                else:
+                    raise ValueError("Reporting to employee does not exist")
+            else:
+                raise ValueError("Employee does not exist")
+        except ValueError as err:
+            raise ValueError(err)
+        except Exception as err:
+            raise err
+
     def info(self):
         doc = """
             This is the admin user class it has the following methods

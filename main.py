@@ -17,7 +17,7 @@ from src.middlewares.AuthMiddleware import AuthMiddleware
 from fastapi import FastAPI
 import yaml
 
-app = FastAPI(prefix = "/api/v1")
+app = FastAPI()
 
 for exception,handler in exceptions:
     app.add_exception_handler(exception,handler)
@@ -44,8 +44,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(AuthMiddleware)
-app.include_router(auth_router, tags=["auth"], prefix="/auth")
-app.include_router(employee_router, tags=["employee"], prefix="/employee")
+app.include_router(auth_router, tags=["auth"], prefix="/api/v1/auth")
+app.include_router(employee_router, tags=["employee"], prefix="/api/v1/employee")
 
 
 @app.get("/test")

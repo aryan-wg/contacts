@@ -227,7 +227,8 @@ paths:
         - contacts_auth: []
       tags:
         - Employee
-      summary: Returns the employee to whom an employee with id equal to emp_id reports
+      summary: Returns the employee to whom an employee with id equal to emp_id reports 
+      description: This endpoint behaves differently based on the current logged in user for admin it only return the user id of the person reporting to and for worker and hr it returns the name and contact info of the employee 
       parameters:
         - $ref: "#/components/parameters/emp_id"
       responses:
@@ -243,7 +244,7 @@ paths:
                     examples:
                       - True
                   data:
-                    $ref: "#/components/schemas/emp_info"
+                    $ref: "#/components/schemas/relation_info"
         400:
           $ref: '#/components/responses/400BadRequest'
         401:
@@ -257,17 +258,22 @@ paths:
       tags:
         - Employee
       summary: This endpoint will change who a user reports to can only be hit by an admin
+      description: If user does not report to anyone reports_to field will have value of 0  
+      parameters:
+        - $ref: "#/components/parameters/emp_id"
       requestBody:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/relation"
+                type: object
+                properties:
+                  reports_to:
+                    $ref: "#/components/schemas/emp_id"
                 required:
-                  - employee
                   - reports_to
       responses:
-        200:
-          $ref: "#/components/responses/200"
+        204:
+          description: Simple 204 successful request fulfilment but not returning any response
         400:
           $ref: '#/components/responses/400BadRequest'
         401:
@@ -291,16 +297,16 @@ paths:
           content:
             application/json:
               schema:
-                type: object 
+                type: object
                 properties:
                   success:
-                    type: boolean 
-                    examples: 
+                    type: boolean
+                    examples:
                       - True
                   data:
-                    type: array
+                    type: array 
                     items:
-                      $ref: "#/components/schemas/emp_info"
+                      $ref: "#/components/schemas/relation_info"
     
 
 
@@ -388,7 +394,7 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: v1/auth/login
+          tokenUrl: /api/v1/auth/login
 
   schemas:
     request: 
@@ -474,14 +480,14 @@ components:
       examples:
         - 1727347857
       description: Unix epoch timestamp in seconds  
-    
+
     emp_info:
       type: object
-      properties: 
-        emp_id:
-          $ref: "#/components/schemas/emp_id"
+      properties:
         name:
           $ref: "#/components/schemas/name"
+        emp_id:
+          $ref: "#/components/schemas/emp_id"
         email:
           $ref: "#/components/schemas/email"
         phone:
@@ -492,10 +498,19 @@ components:
         - email
         - phone
       examples:
-          - id: 9
-            name: sampleName
-            email: test@test.com
-            phone: 9999999999
+      - id: 9
+        name: sampleName
+        email: test@test.com
+        phone: 9999999999
+    
+    relation_info:
+      type: object
+      properties: 
+        reports_to:
+            $ref: "#/components/schemas/emp_info"
+        employee: 
+            $ref: "#/components/schemas/emp_info"
+
     relation:
       type: object
       properties:

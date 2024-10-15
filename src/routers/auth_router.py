@@ -27,14 +27,17 @@ auth_router = APIRouter()
 @auth_router.get("/test")
 async def test_sqlite():
     # pass
+    print("hello")
     test = Test()
     return await test.sqlite_multiple_read_write_calls()
 
 
 @auth_router.post("/login", status_code = 200)
 async def login(login_form: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    print("hello")
     auth_obj = Auth()
     try:
+        print("hellooooo")
         auth_token = await auth_obj.login(int(login_form.username), login_form.password)
         if auth_token:
             return auth_token

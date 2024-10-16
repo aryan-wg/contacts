@@ -21,8 +21,6 @@ tags:
 paths:
   /auth/employee/{emp_id}/password:
     post:
-      security:
-        - contacts_auth: []
       summary: This route will be used to create a new password
       tags:
         - Auth
@@ -34,16 +32,19 @@ paths:
             schema:
               type: object
               properties:
-                password:
-                  type: string
+                new_pass:
+                  $ref: "#/components/schemas/password"
+                old_pass:
+                  $ref: "#/components/schemas/password"
               required:
-                - password
+                - new_pass 
+                - old_pass
 
       responses:
-        200:
-          $ref: "#/components/responses/200Success"
-        400:
-          $ref: "#/components/responses/400BadRequest"
+        204:
+          description: Password updated successfully 
+        401:
+          $ref: "#/components/responses/401Unauthorized"
   /auth/login:
     post:
       summary: This is the route we will hit to login and get token
@@ -137,15 +138,8 @@ paths:
       description: Endpoint removes an employee from the database can only be invoked by admin will shift all the reporting employees to the person next in hierarchy
 
       responses:
-        200:
+        204:
           description: A simple response that tells if deletion is successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
         400:
           $ref: "#/components/responses/400BadRequest"
         401:
@@ -183,7 +177,7 @@ paths:
         - Employee
       summary: Returns a list of requests created by employee 
       parameters:
-      - $ref: '#/components/parameters/request_status'
+        - $ref: '#/components/parameters/request_status'
       security:
         - contacts_auth: []
       responses:
@@ -288,7 +282,7 @@ paths:
         - contacts_auth: []
       tags:
         - Employee 
-      summary: Returns an array of employees that report to employee with id == employeeId
+      summary: Returns an array of employees that report to employee with id is equal to emp_id
       parameters:
         - $ref: "#/components/parameters/emp_id"
       responses:
@@ -306,8 +300,13 @@ paths:
                   data:
                     type: array 
                     items:
-                      $ref: "#/components/schemas/relation_info"
-    
+                      $ref: "#/components/schemas/emp_info"
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        500:
+          $ref: "#/components/responses/500InternalServerError"
 
 
   /admin/request:
@@ -322,63 +321,81 @@ paths:
       responses:
         200:
          $ref: "#/components/responses/200requests"
-    
         400:
           $ref: '#/components/responses/400BadRequest'
-          
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        403:
+          $ref: "#/components/responses/403Forbidden"
         500:
           $ref: "#/components/responses/500InternalServerError"
+
+  /admin/request/{req_id}:
     patch:
       tags:
         - Admin
       summary: Commits an employee's request into the database hence updating the user 
       parameters:
-        - $ref: "#/components/parameters/reqId"
+        - $ref: "#/components/parameters/req_id"
       security:
         - contacts_auth: []
       responses:
         200:
           $ref: "#/components/responses/200requests"
+        400:
+          $ref: "#/components/responses/400BadRequest"
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        403:
+          $ref: "#/components/responses/403Forbidden"
+        500:
+          $ref: "#/components/responses/500InternalServerError"
+
       
           
   /hr/request:
     get:
       tags:
         - Hr
-      summary: Returns a list of requests  
+      summary: Returns a list of requests that are assigned to logged in Hr  
       parameters:
-      - $ref: "#/components/parameters/request_status"
+        - $ref: "#/components/parameters/request_status"
       security:
         - contacts_auth: []
       responses:
         200:
           $ref: "#/components/responses/200requests"
-        
         400:
-          $ref: '#/components/responses/400BadRequest'
-          
+          $ref: "#/components/responses/400BadRequest "
+        401:
+          $ref: "#/components/responses/401Unauthorized "
+        403:
+          $ref: "#/components/responses/403Forbidden"
         500:
           $ref: "#/components/responses/500InternalServerError"
       
+  /hr/request/{req_id}:
     patch:
       tags:
         - Hr
       summary: Updates the request accordingly and returns a list of requests  
       parameters:
-      - $ref: "#/components/parameters/reqId"
+      - $ref: "#/components/parameters/req_id"
 
       requestBody:
-        $ref: "#/components/requestBodies/request"
+        $ref: "#/components/requestBodies/HrUpdateReqStatus"
 
       security:
         - contacts_auth: []
       responses:
         200:
           $ref: "#/components/responses/200requests"
-        
         400:
-          $ref: '#/components/responses/400BadRequest'
-          
+          $ref: "#/components/responses/400BadRequest"
+        401:
+          $ref: "#/components/responses/401Unauthorized"
+        403:
+          $ref: "#/components/responses/403Forbidden"
         500:
           $ref: "#/components/responses/500InternalServerError"
 
@@ -594,14 +611,14 @@ components:
               address: 
                   $ref: "#/components/schemas/address" 
 
-    request:
+    HrUpdateReqStatus:
       required: true
       content: 
         application/json:
           schema:
             type: object
             properties: 
-              requestStatus:
+              request_status:
                 type: string
                 examples:
                   - approved_by_hr
@@ -609,6 +626,9 @@ components:
                 type: string
                 examples:
                   - this is a remark
+            required:
+              - request_status
+              - remark 
       
   parameters:
     request_status:
@@ -628,7 +648,7 @@ components:
         type: string
 
     req_id:
-      name: reqId
+      name: req_id
       in: path
       required: true
       schema:

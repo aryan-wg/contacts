@@ -37,7 +37,6 @@ async def populate_requests(requests):
         )
         request["created_by"] = record[0][0]
         request["assigned_hr"] = record[1][0]
-        # print(request)
         populated.append(request)
     return populated
 

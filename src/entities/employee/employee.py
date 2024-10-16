@@ -6,6 +6,7 @@ from ...utils.parsing_populating_utils import parse_requests, populate_requests
 
 from ...utils.general_utils import check_pass, hash_pass
 from ...utils.async_pg_db_utils import (
+    check_if_exists_in_db,
     match_string_in_field,
     read_by_multiple_att_and_keys,
     read_fields_from_record,
@@ -59,20 +60,23 @@ class Employee:
         return data
 
     async def update_password(self, old_pass, new_pass, empId):
-        hashed_pass = await read_fields_from_record(
-            "employees", "password", "empId", [empId]
-        )
-        if hashed_pass:
-            hashed_pass = hashed_pass[0][0]
-        old_check = check_pass(old_pass, hashed_pass)
-        if old_check:
-            new_hashed = hash_pass(new_pass)
-            return await update_one_record(
-                "employees", {"password": new_hashed}, "empId", empId
+        if await check_if_exists_in_db("employees","empId",empId):
+            print("helloo")
+            hashed_pass = await read_fields_from_record(
+                "employees", "password", "empId", [empId]
             )
+            if hashed_pass:
+                hashed_pass = hashed_pass[0][0]
+            old_check = check_pass(old_pass, hashed_pass)
+            if old_check:
+                new_hashed = hash_pass(new_pass)
+                return await update_one_record(
+                    "employees", {"password": new_hashed}, "empId", empId
+                )
+            else:
+                raise ValueError("Unauthorized user")
         else:
-            print("Old password did not match \n")
-            return False
+            raise ValueError("Unauthorized user")
 
     async def request_self_info_change(self, updated_info, empId):
         is_request_in_progress = await read_by_multiple_att_and_keys(

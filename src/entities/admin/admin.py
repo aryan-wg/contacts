@@ -23,8 +23,10 @@ class Admin(Employee):
     def __init__(self):
         pass
 
-    async def get_req(self,status_list):
-        data = await read_fields_from_record("requests","*","request_status",status_list)
+    async def get_req(self, status_list):
+        data = await read_fields_from_record(
+            "requests", "*", "request_status", status_list
+        )
         if data:
             data = parse_requests(data)
             data = await populate_requests(data)
@@ -52,26 +54,31 @@ class Admin(Employee):
 
     async def commit_request(self, req_id):
         # get request information
+        print(req_id)
         request = await read_fields_from_record("requests", "*", "request_id", [req_id])
         request = parse_requests(request)
         request = request[0]
+        if not request:
+            raise ValueError("Request does not exist")
+        if request["status"] == "approved_by_hr":
+            # parse the json obj of update to updated dict
+            updated_info = json.loads(request["updated_info"])
 
-        # parse the json obj of update to updated dict
-        updated_info = json.loads(request["updated_info"])
+            # the address field has sub fields and should be stored as a stringified json obj
+            updated_info["address"] = json.dumps(updated_info["address"])
 
-        # the address field has sub fields and should be stored as a stringified json obj
-        updated_info["address"] = json.dumps(updated_info["address"])
+            # update the employee record
+            await update_one_record(
+                "employees", updated_info, "empId", request["created_by"]
+            )
 
-        # update the employee record
-        await update_one_record(
-            "employees", updated_info, "empId", request["created_by"]
-        )
-
-        # update the request status to committed and add commit time
-        request["update_committed_at"] = ceil(time.time())
-        request["request_status"] = "committed"
-        await update_one_record("requests", request, "request_id", req_id)
-        return True
+            # update the request status to committed and add commit time
+            request["update_committed_at"] = ceil(time.time())
+            request["request_status"] = "committed"
+            await update_one_record("requests", request, "request_id", req_id)
+            return True
+        else:
+            raise ValueError("Request can't be committed")
 
     async def create_new_employee(self, new_employee):
         try:
@@ -109,7 +116,14 @@ class Admin(Employee):
             if not await check_if_exists_in_db("employees", "empId", emp_id):
                 return False
             else:
-                if len(await read_by_multiple_attributes("employees", "*", ["user_type", "empId"], ["admin", emp_id])) == 1:
+                if (
+                    len(
+                        await read_by_multiple_attributes(
+                            "employees", "*", ["user_type", "empId"], ["admin", emp_id]
+                        )
+                    )
+                    == 1
+                ):
                     raise ValueError("Deleting last admin not allowed")
                 reporting_employees = await read_fields_from_record(
                     "relations", "employee", "reports_to", [emp_id]
@@ -140,35 +154,59 @@ class Admin(Employee):
     async def delete_employee(self, emp_id):
         return await delete_from_table("employees", "empId", emp_id)
 
-    async def get_reports_to(self,emp_id):
-        if not await check_if_exists_in_db("employees","empId",emp_id):
+    async def get_reports_to(self, emp_id):
+        if not await check_if_exists_in_db("employees", "empId", emp_id):
             raise ValueError("Employee does not exist.")
-        else :
-            data = await read_fields_from_record("relations", "*", "employee", [emp_id])
+        else:
+            data = await read_fields_from_record(
+                "relations", "reports_to", "employee", [emp_id]
+            )
             if data[0][0]:
-                return {"emp_id":data[0][0]}
+                return {"emp_id": data[0][0]}
             else:
-                return [] 
+                return []
 
-    async def update_reports_to(self,emp_id,reports_to_emp_id):
+    async def update_reports_to(self, emp_id, reports_to_emp_id):
         try:
-            if await check_if_exists_in_db("employees","empid",emp_id):
-                if reports_to_emp_id and await check_if_exists_in_db("employees","empId",reports_to_emp_id):
+            if await check_if_exists_in_db("employees", "empid", emp_id):
+                if reports_to_emp_id and await check_if_exists_in_db(
+                    "employees", "empId", reports_to_emp_id
+                ):
                     print("in normal update")
-                    return await update_one_record("relations",{"reports_to":reports_to_emp_id},"employee",emp_id)
+                    return await update_one_record(
+                        "relations",
+                        {"reports_to": reports_to_emp_id},
+                        "employee",
+                        emp_id,
+                    )
                 elif not reports_to_emp_id:
                     # will run in case when reports to user id is 0 (ie employee does not report to anyone)
-                    print("in top user update")
-                    print(emp_id)
-                    return await update_one_record("relations",{"reports_to":reports_to_emp_id},"employee",emp_id)
+                    return await update_one_record(
+                        "relations",
+                        {"reports_to": reports_to_emp_id},
+                        "employee",
+                        emp_id,
+                    )
                 else:
                     raise ValueError("Reporting to employee does not exist")
             else:
-                raise ValueError("Employee does not exist")
+                raise ValueError(
+                    {"status_code": 404, "detail": "Employee does not exist"}
+                )
         except ValueError as err:
             raise ValueError(err)
         except Exception as err:
             raise err
+
+    async def get_reported_by(self, emp_id):
+        if not await check_if_exists_in_db("employees", "empId", emp_id):
+            raise ValueError("Employee does not exist.")
+        else:
+            data = await read_fields_from_record(
+                "relations", "employee", "reports_to", [emp_id]
+            )
+            data = [item[0] for item in data]
+            return data
 
     def info(self):
         doc = """

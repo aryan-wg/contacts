@@ -1,10 +1,12 @@
 from src.routers.admin_router import admin_router
 from src.routers.auth_router import auth_router
+from src.routers.hr_router import hr_router
 from src.routers.employee_router import employee_router
 from fastapi.middleware.cors import CORSMiddleware
 from src.database.db_init import create_tables
 from src.execptions.HttpExceptions import exceptions
-from src.middlewares.AuthMiddleware import AuthMiddleware 
+from src.middlewares.AuthMiddleware import AuthMiddleware
+
 # from src.database.db_setup import create_tables, insert_sample_data
 # from src.ui.admin_ui import AdminUi
 # from src.ui.worker_ui import WorkerUi
@@ -19,8 +21,9 @@ import yaml
 
 app = FastAPI()
 
-for exception,handler in exceptions:
-    app.add_exception_handler(exception,handler)
+for exception, handler in exceptions:
+    app.add_exception_handler(exception, handler)
+
 
 @app.on_event("startup")
 async def startup_functions():
@@ -46,6 +49,8 @@ app.add_middleware(
 app.add_middleware(AuthMiddleware)
 app.include_router(auth_router, tags=["auth"], prefix="/api/v1/auth")
 app.include_router(employee_router, tags=["employee"], prefix="/api/v1/employee")
+app.include_router(admin_router, tags=["admin"], prefix="/api/v1/admin")
+app.include_router(hr_router, tags=["hr"], prefix="/api/v1/hr")
 
 
 @app.get("/test")

@@ -27,6 +27,13 @@ class UserTypeEnum(str, Enum):
     worker = "worker"
 
 
+class RequestStatusEnum(str, Enum):
+    committed = "committed"
+    rejected = "rejected"
+    approved_by_hr = "approved_by_hr"
+    hr_assigned = "hr_assigned"
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -50,8 +57,17 @@ class EmployeeInfo(BaseModel):
     # reports to should be optional or somone can say its 0
     reports_to: Optional[int]
 
+
+class UpdateReqStatusBodyHr(BaseModel):
+    request_status: RequestStatusEnum
+    remark: str 
+
+class UpdateReqStatusBodyAdmin(BaseModel):
+    request_status: RequestStatusEnum
+
 class PutReportsToBody(BaseModel):
     reports_to: int
+
 
 class ChangeInfoRequestBody(BaseModel):
     name: str
@@ -59,11 +75,12 @@ class ChangeInfoRequestBody(BaseModel):
     email: Email
     address: Address
 
+
 # class EmployeeInfo(BaseModel):
 #     password: str
 #     user_type: UserTypeEnum
 #     name: str
-#     phone: int 
+#     phone: int
 #     email: str
 #     Address: Address
 #     reports_to: int

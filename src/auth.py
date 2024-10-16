@@ -62,7 +62,6 @@ class Auth:
                         case "hr":
                             return Hr_employee(decoded_token["emp_id"])
                 elif "employee" in allowed_user_types :
-                    print("hello")
                     return Employee(decoded_token["emp_id"])
                 else:
                     raise HTTPException(status_code=403, detail="Forbidden")

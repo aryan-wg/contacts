@@ -33,8 +33,15 @@ class Worker(Employee):
         else:
             data = await read_fields_from_record("relations", "*", "reports_to", [emp_id])
             if data:
+                print("hellow before parsing")
                 data = parse_relations(data)
+                print("hellow after parsing")
+                print(data)
                 data = await populate_relations(data)
+                print("hellow after populating")
+                for item in data:
+                    del item["reports_to"]
+                    del item["emp_id"]
                 return data
             else:
                 return [] 

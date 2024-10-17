@@ -12,8 +12,8 @@ class Worker(Employee):
     #     elif len(employee_info) == 6:
     #         super().__init__(employee_info)
 
-    def __init__(self, emp_id):
-        super().__init__(emp_id)
+    def __init__(self, emp_id,logger):
+        super().__init__(emp_id,logger)
 
     async def get_reports_to(self, emp_id):
         if not await check_if_exists_in_db("employees","empId",emp_id):
@@ -33,12 +33,8 @@ class Worker(Employee):
         else:
             data = await read_fields_from_record("relations", "*", "reports_to", [emp_id])
             if data:
-                print("hellow before parsing")
                 data = parse_relations(data)
-                print("hellow after parsing")
-                print(data)
                 data = await populate_relations(data)
-                print("hellow after populating")
                 for item in data:
                     del item["reports_to"]
                     del item["emp_id"]

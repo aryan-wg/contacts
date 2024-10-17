@@ -1,11 +1,9 @@
-from os import path
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
-from ..execptions.HttpExceptions import UnauthorizedErr
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from ..factories import user_factory
-from pprint import pprint
+from ..Logger.Logger import Logger
 PATHS = {
     "/api/v1/employee/": {"GET": ["employee"], "POST": ["admin"]},
     "/api/v1/employee/profile/": {"GET": ["employee"]},
@@ -48,6 +46,7 @@ def get_path_pattern(path):
     all_allowed_paths_as_splitted_lists = [item.split("/") for item in PATHS.keys()]
     # print(request_path_as_splitted_list)
     # print(all_allowed_paths_as_splitted_lists)
+    splitted = ""
     for allowed_path_as_splitted_list in all_allowed_paths_as_splitted_lists:
         allowed_path_as_splitted_list = [
             path for path in allowed_path_as_splitted_list if not path == ""
@@ -60,35 +59,32 @@ def get_path_pattern(path):
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        path_pattern = get_path_pattern(request.url.path)
         try:
             # path = request.url.path
-            # print(request.method)
-            # print(request.url.path)
-            path_pattern = get_path_pattern(request.url.path)
-            print(path_pattern)
             if path_pattern in PATHS.keys():
                 allowed_user_types = PATHS[path_pattern][request.method]
                 if not request.headers.get("authorization"):
                     raise HTTPException(status_code=401, detail="Auth token not found")
                 else:
-                    print(allowed_user_types)
                     token = request.headers.get("authorization").split(" ")[1]
                     request.state.user_obj = user_factory(token, allowed_user_types)
-                    print("allowed_user_types")
                     response = await call_next(request)
-                    print("response is here")
-                    # print("jfdsklfjksdljlk",response.content)
                     return response
             else:
                 return await call_next(request)
         except HTTPException as err:
-            print(str(err))
+            if err.status_code == 401:
+                logger = Logger(log_file="logs.log",log_name="UNAUTHENTICATED")
+                logger.log(f"{err.detail}")
+            elif err.status_code == 403:
+                logger = Logger(log_file="logs.log",log_name="FORBIDDEN")
+                logger.log(f"Path:{path_pattern}, {err.detail}")
             return JSONResponse(
                 status_code=err.status_code,
                 content={"success": False, "error": err.detail},
             )
         except Exception as err:
-            print(str(err),"ye toh kych hai ")
             return JSONResponse(
                 status_code=401, content={"success": False, "error": str(err)}
             )

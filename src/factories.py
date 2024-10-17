@@ -1,10 +1,6 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException,Request
 from typing import Annotated
 
-from .entities.admin.admin import Admin
-from .entities.hr.hr_employee import Hr_employee
-from .entities.worker.worker import Worker
-from .entities.employee.employee import Employee
 from .auth import Auth
 
 from jose import JWTError
@@ -12,21 +8,17 @@ from fastapi.security import OAuth2PasswordBearer
 
 token_from_auth_header = OAuth2PasswordBearer(tokenUrl="/login")
 
-
-
 def admin_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
         return Auth.validate_token_gen_obj({"token": token, "user_type": "admin"})
     except JWTError as err:
         raise HTTPException(status_code=401, detail=str(err))
 
-
 def hr_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
         return Auth.validate_token_gen_obj({"token": token, "user_type": "hr"})
     except JWTError as err:
         raise HTTPException(status_code=401, detail=str(err))
-
 
 def worker_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     try:
@@ -40,15 +32,18 @@ def employee_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     except JWTError as err:
         raise HTTPException(status_code=401,detail=str(err))
 
-
 def user_factory(token:str,allowed_users:list):
-    try:
-        return Auth.validate_token_gen_obj(token,allowed_users)
-    except JWTError as err:
-        raise HTTPException(status_code=401,detail=str(err))
+    return Auth.validate_token_gen_obj(token,allowed_users)
+
+def user_dependency(request:Request):
+    return request.state.user_obj
 
 # token: Annotated[str, Depends(token_from_auth_header)],user_type:str
 
+# from .entities.admin.admin import Admin
+# from .entities.hr.hr_employee import Hr_employee
+# from .entities.worker.worker import Worker
+# from .entities.employee.employee import Employee
 
 # def admin_handler(token: Annotated[str, Depends(token_from_auth_header)]):
 #     user_type = "admin"

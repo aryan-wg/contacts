@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request,Depends
+from typing import Annotated
+from ..factories import user_dependency
+from ..entities.hr.hr_employee import Hr_employee
 from ..utils.general_utils import csv_to_list
 from ..execptions.HttpExceptions import InternalServerErr, InvalidValueErr, NotFoundErr
 from ..types.general_types import UpdateReqStatusBodyHr
@@ -9,8 +12,7 @@ STATUS_VALID_VALUES = ["committed", "rejected", "approved_by_hr", "hr_assigned"]
 
 
 @hr_router.get("/request", status_code=200)
-async def get_requests_hr(status: str, request: Request):
-    hr_obj = request.state.user_obj
+async def get_requests_hr(hr_obj:Annotated[Hr_employee,Depends(user_dependency)],status: str):
     data = []
     try:
         status_list = csv_to_list(status)
@@ -27,9 +29,8 @@ async def get_requests_hr(status: str, request: Request):
 
 @hr_router.patch("/request/{req_id}", status_code=204)
 async def update_request_status_with_remark(
-    req_id: int, req_body: UpdateReqStatusBodyHr, request: Request
+    req_id: int, req_body: UpdateReqStatusBodyHr, hr_obj:Annotated[Hr_employee,Depends(user_dependency)]
 ):
-    hr_obj = request.state.user_obj
     try:
         status = (
             req_body.request_status

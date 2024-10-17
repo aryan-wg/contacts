@@ -1,6 +1,6 @@
 from .db_setup_postgres import get_con
 from ..entities.admin.admin import Admin
-
+from ..Logger.Logger import Logger
 
 async def create_tables():
     con = await get_con()
@@ -36,7 +36,8 @@ async def create_tables():
     await create_first_admin()
 
 async def create_first_admin():
-    adminObj = Admin()
+    logger = Logger("logs.log","App just started")
+    adminObj = Admin(0,logger)
     data = {
         "name": "Admin",
         "phone": 9999999999,

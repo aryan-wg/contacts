@@ -3,6 +3,7 @@ from abc import abstractmethod
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from .types.argument_types import TokenObj
+from .Logger.Logger import Logger
 from fastapi import Depends, HTTPException
 from .entities.admin.admin import Admin
 from .entities.hr.hr_employee import Hr_employee
@@ -53,17 +54,20 @@ class Auth:
         else:
             try:
                 decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                logger = Logger(log_file="logs.log",log_name=f"{decoded_token['emp_id']}")
                 if decoded_token["user_type"] in allowed_user_types:
                     match decoded_token["user_type"]:
                         case "admin":
-                            return Admin()
+                            return Admin(decoded_token["emp_id"],logger)
                         case "worker":
-                            return Worker(decoded_token["emp_id"])
+                            return Worker(decoded_token["emp_id"],logger)
                         case "hr":
-                            return Hr_employee(decoded_token["emp_id"])
+                            return Hr_employee(decoded_token["emp_id"],logger)
                 elif "employee" in allowed_user_types :
-                    return Employee(decoded_token["emp_id"])
+                    return Employee(decoded_token["emp_id"],logger)
                 else:
-                    raise HTTPException(status_code=403, detail="Forbidden")
+                    raise HTTPException(status_code=403, detail=f"Forbidden employee id: {decoded_token['emp_id']}")
             except JWTError as err:
-                raise HTTPException(status_code=403, detail=str(err))
+                logger = Logger(log_file="logs.log",log_name="UNAUTHENTICATED")
+                logger.log(f"validate_token_gen_obj {str(err)}")
+                raise HTTPException(status_code=401, detail=str(err))

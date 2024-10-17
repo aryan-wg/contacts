@@ -25,7 +25,7 @@ class Auth:
             user = await read_fields_from_record("employees", "*", "empid", [empId])
             if user:
                 _, name, phone, email, address, hashed_db, user_type = user[0]
-                employee_info = (empId, name, phone, email, address)
+                # employee_info = (empId, name, phone, email, address)
                 check = check_pass(password, hashed_db)
                 if check:
                     return self.create_access_token(
@@ -33,8 +33,6 @@ class Auth:
                     )
                 else:
                     return None
-        except NameError as err:
-            raise err
         except Exception as err:
             raise err
 

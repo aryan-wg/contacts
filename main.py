@@ -7,17 +7,21 @@ from src.database.db_init import create_tables
 from src.execptions.HttpExceptions import exceptions
 from src.middlewares.AuthMiddleware import AuthMiddleware
 
-# from src.database.db_setup import create_tables, insert_sample_data
-# from src.ui.admin_ui import AdminUi
-# from src.ui.worker_ui import WorkerUi
-# from src.ui.hr_ui import HrUi
-# from src.ui.auth_ui import Auth_ui
-# from src.utils.parsing_populating_utils import populate_relations
-#
-# from pprint import pprint
-#
 from fastapi import FastAPI
 import yaml
+
+# import logging
+# import uvicorn
+#
+# LOG = logging.getLogger(__name__)
+# LOG.info("API is starting up")
+# LOG.info(uvicorn.Config.asgi_version)
+#
+#
+# async def get_index():
+#     LOG.info("GET /")
+#     return {"Hello": "Api"}
+#
 
 app = FastAPI()
 

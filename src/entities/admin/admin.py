@@ -1,3 +1,4 @@
+from middlewares.AuthMiddleware import check_if_matching
 from ..employee.employee import Employee
 from ...utils.async_pg_db_utils import (
     read_fields_from_record,
@@ -79,12 +80,14 @@ class Admin(Employee):
 
     async def create_new_employee(self, new_employee):
         try:
-            new_employee["password"] = hash_pass(new_employee["password"])
+            if new_employee["reports_to"]!=0 and not await check_if_exists_in_db("employees","empId",new_employee["reports_to"]):
+                raise ValueError("Reporting to user does not exist")
             if await check_if_exists_in_db("employees", "email", new_employee["email"]):
                 raise ValueError(
                     f"User with email {new_employee['email']} already exists"
                 )
             else:
+                new_employee["password"] = hash_pass(new_employee["password"])
                 created_employee = await write_to_table("employees", new_employee)
                 return created_employee
         except ValueError as err:

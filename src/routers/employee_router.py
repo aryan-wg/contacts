@@ -31,18 +31,14 @@ async def create_employee(new_employee: EmployeeInfo, admin_obj:Annotated[Admin,
         employee_info_dict = new_employee.dict()
         employee_info_dict["address"] = json.dumps(employee_info_dict["address"])
         created_emp = await admin_obj.create_new_employee(employee_info_dict)
-        created_relation = await admin_obj.create_new_relation(
+        await admin_obj.create_new_relation(
             emp_id=created_emp[0], reports_to_emp_id=employee_info_dict["reports_to"]
         )
-        if not created_relation:
-            await admin_obj.delete_employee(created_emp[0])
-            raise ValueError("Reporting to employee does not exist")
-        else:
-            return {
-                "success": True,
-                "message": "Employee created successfuly",
-                "emp_id": created_emp[0],
-            }
+        return {
+            "success": True,
+            "message": "Employee created successfuly",
+            "emp_id": created_emp[0],
+        }
     except ValueError as err:
         raise InvalidValueErr(err)
     except Exception as err:

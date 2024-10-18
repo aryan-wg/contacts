@@ -46,13 +46,15 @@ class Auth:
         )
 
     @abstractmethod
-    def validate_token_gen_obj(token, allowed_user_types):
+    def validate_token_gen_obj(token, allowed_user_types,route):
         if not token:
+            logger = Logger(log_file="logs.log", log_name=f"UNAUTHENTICATED {route}")
+            logger.log(f"validate_token_gen_obj token not found")
             raise HTTPException(status_code=401, detail="Not authenticated")
         else:
             try:
                 decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-                logger = Logger(log_file="logs.log",log_name=f"{decoded_token['emp_id']}")
+                logger = Logger(log_file="logs.log",log_name=f"{decoded_token['emp_id']} {route}")
                 if decoded_token["user_type"] in allowed_user_types:
                     match decoded_token["user_type"]:
                         case "admin":
@@ -66,6 +68,6 @@ class Auth:
                 else:
                     raise HTTPException(status_code=403, detail=f"Forbidden employee id: {decoded_token['emp_id']}")
             except JWTError as err:
-                logger = Logger(log_file="logs.log",log_name="UNAUTHENTICATED")
+                logger = Logger(log_file="logs.log",log_name=f"UNAUTHENTICATED {route}")
                 logger.log(f"validate_token_gen_obj {str(err)}")
                 raise HTTPException(status_code=401, detail=str(err))

@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from ..factories import user_factory
 from ..Logger.Logger import Logger
+from ..types.general_types import LOG_LEVEL_ENUM
 PATHS = {
     "/api/v1/employee/": {"GET": ["employee"], "POST": ["admin"]},
     "/api/v1/employee/profile/": {"GET": ["employee"]},
@@ -68,7 +69,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     raise HTTPException(status_code=401, detail="Auth token not found")
                 else:
                     token = request.headers.get("authorization").split(" ")[1]
-                    request.state.user_obj = user_factory(token, allowed_user_types)
+                    request.state.user_obj = user_factory(token, allowed_user_types,request.url.path)
                     response = await call_next(request)
                     return response
             else:
@@ -76,10 +77,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
         except HTTPException as err:
             if err.status_code == 401:
                 logger = Logger(log_file="logs.log",log_name="UNAUTHENTICATED")
-                logger.log(f"{err.detail}")
+                logger.log(f"{err.detail}",LOG_LEVEL_ENUM.INFO)
             elif err.status_code == 403:
                 logger = Logger(log_file="logs.log",log_name="FORBIDDEN")
-                logger.log(f"Path:{path_pattern}, {err.detail}")
+                logger.log(f"Path:{path_pattern}, {err.detail}",LOG_LEVEL_ENUM.ERROR)
             return JSONResponse(
                 status_code=err.status_code,
                 content={"success": False, "error": err.detail},

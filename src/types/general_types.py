@@ -15,6 +15,11 @@ Email = Annotated[str, AfterValidator(check_email_format)]
 Phone = Annotated[int, AfterValidator(check_phone_format)]
 PostalCode = Annotated[int, AfterValidator(check_pin_code_format)]
 
+class LOG_LEVEL_ENUM(str,Enum):
+    ERROR = "error"
+    INFO = "info"
+    WARNING = "warning"
+    DEBUG = "debug"
 
 class ChangePassBody(BaseModel):
     old_pass: Password

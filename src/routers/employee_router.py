@@ -20,7 +20,7 @@ from ..entities.admin.admin import Admin
 # from ..entities.worker.worker import Worker
 # from ..entities.employee.employee import Employee
 # from ..entities.admin.admin import Admin
-from ..types.general_types import EmployeeInfo, ChangeInfoRequestBody, PutReportsToBody
+from ..types.general_types import EmployeeInfo, ChangeInfoRequestBody, PutReportsToBody, LOG_LEVEL_ENUM
 
 employee_router = APIRouter()
 

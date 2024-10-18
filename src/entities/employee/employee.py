@@ -2,6 +2,7 @@ from abc import abstractmethod, ABC
 import json
 import time
 
+from ...types.general_types import LOG_LEVEL_ENUM
 from ...utils.parsing_populating_utils import parse_requests, populate_requests
 
 from ...utils.general_utils import check_pass, hash_pass
@@ -50,16 +51,18 @@ class Employee:
                 "address": json.loads(data[3]),
                 "emp_id": self.emp_id,
             }
+            self.logger.log("get_profile_info",LOG_LEVEL_ENUM.INFO)
             return profile
         else:
             self.logger.log("get_profile_info User does not exist")
             raise ValueError("User does not exist")
 
     async def search_other_employee(self, name):
-        data = await match_string_in_field(
+        employees = await match_string_in_field(
             "employees", "empid, name, phone, email", "name", name
         )
-        return data
+        self.logger.log("Search other employee",LOG_LEVEL_ENUM.INFO)
+        return employees
 
     async def update_password(self,emp_id, old_pass, new_pass):
         if await check_if_exists_in_db("employees","empId",emp_id):
@@ -71,14 +74,15 @@ class Employee:
             old_check = check_pass(old_pass, hashed_pass)
             if old_check:
                 new_hashed = hash_pass(new_pass)
+                self.logger.log("Updated password",LOG_LEVEL_ENUM.INFO)
                 return await update_one_record(
                     "employees", {"password": new_hashed}, "empId",emp_id
                 )
             else:
-                self.logger.log("update_password Old passwords did not match","warning")
+                self.logger.log("update_password Old passwords did not match",LOG_LEVEL_ENUM.ERROR)
                 raise ValueError("Unauthorized user")
         else:
-            self.logger.log("update_password Employee not found","warning")
+            self.logger.log("update_password Employee not found",LOG_LEVEL_ENUM.ERROR)
             raise ValueError("Unauthorized user")
 
     async def request_self_info_change(self, updated_info):
@@ -89,6 +93,7 @@ class Employee:
             [self.emp_id, ["approved_by_hr", "hr_assigned"]],
         )
         if not len(is_request_in_progress) == 0:
+            self.logger("One request already under process",LOG_LEVEL_ENUM.ERROR)
             raise ValueError("One request already under process")
         else:
             all_hr = await read_fields_from_record(
@@ -96,6 +101,7 @@ class Employee:
             )
             all_hr = [tuple_emp_id[0] for tuple_emp_id in all_hr]
             if not all_hr:
+                self.logger("No HR in to assign request to", LOG_LEVEL_ENUM.ERROR)
                 raise ValueError("No HR employee to assign request to.")
             else:
                 assigned_hr = random.choice(all_hr)
@@ -118,6 +124,7 @@ class Employee:
                     "remark": None,
                 }
                 created_request = await write_to_table("requests", request)
+                self.logger.log("New request created",LOG_LEVEL_ENUM.INFO)
                 return created_request[0]
 
     async def get_my_requests(self, current_status_list):
@@ -129,6 +136,7 @@ class Employee:
         )
         requests = parse_requests(requests)
         requests = await populate_requests(requests)
+        self.logger.log(f"Get my requests {current_status_list}",LOG_LEVEL_ENUM.INFO)
         return requests
 
     @abstractmethod

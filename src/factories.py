@@ -32,8 +32,8 @@ def employee_factory(token: Annotated[str, Depends(token_from_auth_header)]):
     except JWTError as err:
         raise HTTPException(status_code=401,detail=str(err))
 
-def user_factory(token:str,allowed_users:list):
-    return Auth.validate_token_gen_obj(token,allowed_users)
+def user_factory(token:str,allowed_users:list,route:str):
+    return Auth.validate_token_gen_obj(token,allowed_users,route)
 
 def user_dependency(request:Request):
     return request.state.user_obj

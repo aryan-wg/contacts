@@ -1,5 +1,5 @@
-from middlewares.AuthMiddleware import check_if_matching
 from ..employee.employee import Employee
+from ...types.general_types import LOG_LEVEL_ENUM
 from ...utils.async_pg_db_utils import (
     read_fields_from_record,
     update_one_record,
@@ -42,18 +42,20 @@ class Admin(Employee):
 
     async def get_closed_req(self):
         # for a request to be closed it should have req_status == committed or rejected
-        data = await read_fields_from_record(
+        self.logger.log(f"admin get reported by", LOG_LEVEL_ENUM.INFO)
+        requests = await read_fields_from_record(
             "requests", "*", "request_status", ["committed", "rejected"]
         )
-        if data:
-            data = parse_requests(data)
-            data = await populate_requests(data)
+        if requests:
+            requests = parse_requests(requests)
+            requests = await populate_requests(requests)
         return data
 
     async def commit_request(self, req_id):
         # get request information
         request = await read_fields_from_record("requests", "*", "request_id", [req_id])
         if not len(request) == 1:
+            self.logger.log(f"Request does not exist {req_id}",LOG_LEVEL_ENUM.ERROR)
             raise ValueError("Request does not exist")
         else:
             request = parse_requests(request)
@@ -74,25 +76,31 @@ class Admin(Employee):
                 request["update_committed_at"] = ceil(time.time())
                 request["request_status"] = "committed"
                 await update_one_record("requests", request, "request_id", req_id)
+                self.logger.log(f"Request commited {req_id}",LOG_LEVEL_ENUM.INFO)
                 return True
             else:
+                self.logger.log(f"Request can't be commited {req_id} status = {request["status"]}",LOG_LEVEL_ENUM.ERROR)
                 raise ValueError("Request can't be committed")
 
     async def create_new_employee(self, new_employee):
         try:
             if new_employee["reports_to"]!=0 and not await check_if_exists_in_db("employees","empId",new_employee["reports_to"]):
+                self.logger.log(f"Reporting to user does not exist {new_employee["reports_to"]}",LOG_LEVEL_ENUM.ERROR)
                 raise ValueError("Reporting to user does not exist")
             if await check_if_exists_in_db("employees", "email", new_employee["email"]):
+                self.logger.log(f"User with email {new_employee['email']} already exists",LOG_LEVEL_ENUM.ERROR)
                 raise ValueError(
                     f"User with email {new_employee['email']} already exists"
                 )
             else:
                 new_employee["password"] = hash_pass(new_employee["password"])
                 created_employee = await write_to_table("employees", new_employee)
+                self.logger.log(f"new user created empId = {created_employee["empid"]}",LOG_LEVEL_ENUM.INFO)
                 return created_employee
         except ValueError as err:
             raise ValueError(err)
         except Exception as err:
+            self.logger.log(f"{str(err)}", LOG_LEVEL_ENUM.ERROR)
             raise Exception(err)
 
     async def create_new_relation(self, emp_id, reports_to_emp_id):
@@ -104,15 +112,19 @@ class Admin(Employee):
                 new_relation["employee"] = emp_id
                 new_relation["reports_to"] = reports_to_emp_id
                 created_relation = await write_to_table("relations", new_relation)
+                self.logger.log(f"New relation created ",LOG_LEVEL_ENUM.INFO)
                 return created_relation
             else:
+                self.logger.log(f"employee does not exist in db emp id = {emp_id}",LOG_LEVEL_ENUM.ERROR)
                 return False
         except Exception as err:
+            self.logger.log(f"{str(err)}", LOG_LEVEL_ENUM.ERROR)
             raise Exception(err)
 
     async def remove_employee(self, emp_id):
         try:
             if not await check_if_exists_in_db("employees", "empId", emp_id):
+                self.logger.log(f"Employee does not exist ",LOG_LEVEL_ENUM.ERROR)
                 return False
             else:
                 if (
@@ -123,6 +135,7 @@ class Admin(Employee):
                         )
                         == 1
                 ):
+                    self.logger.log(f"Deleting last admin not allowed ", LOG_LEVEL_ENUM.ERROR)
                     raise ValueError("Deleting last admin not allowed")
                 reporting_employees = await read_fields_from_record(
                     "relations", "employee", "reports_to", [emp_id]
@@ -138,30 +151,38 @@ class Admin(Employee):
                     )
                 )
                 for reporting_employee in reporting_employees:
-                    await write_to_table(
-                        "relations",
-                        {"employee": reporting_employee, "reports_to": reporting_to},
-                    )
+                    await self.create_new_relation(reporting_employee,reporting_to)
+                    # await write_to_table(
+                    #     "relations",
+                    #     {"employee": reporting_employee, "reports_to": reporting_to},
+                    # )
                 await delete_from_table("relations", "reports_to", emp_id)
+                self.logger.log("Deleted relation")
                 await self.delete_employee(emp_id)
                 return True
         except ValueError as err:
             raise err
         except Exception as err:
+            self.logger.log(f"{str(err)}",LOG_LEVEL_ENUM.ERROR)
             raise err
 
     async def delete_employee(self, emp_id):
         if not await check_if_exists_in_db("employees", "empId", emp_id):
+            self.logger.log("Employee does not exist",LOG_LEVEL_ENUM.ERROR)
             raise ValueError("Employee does not exist.")
-        return await delete_from_table("employees", "empId", emp_id)
+        else:
+            self.logger.log(f"Deleting employee {emp_id}",LOG_LEVEL_ENUM.INFO)
+            return await delete_from_table("employees", "empId", emp_id)
 
     async def get_reports_to(self, emp_id):
         if not await check_if_exists_in_db("employees", "empId", emp_id):
+            self.logger.log(f"Employee does not exist",LOG_LEVEL_ENUM.ERROR)
             raise ValueError("Employee does not exist.")
         else:
             data = await read_fields_from_record(
                 "relations", "reports_to", "employee", [emp_id]
             )
+            self.logger.log(f"get_reports_to", LOG_LEVEL_ENUM.INFO)
             if data[0][0]:
                 return {"emp_id": data[0][0]}
             else:
@@ -173,6 +194,7 @@ class Admin(Employee):
                 if reports_to_emp_id and await check_if_exists_in_db(
                         "employees", "empId", reports_to_emp_id
                 ):
+                    self.logger.log(f"update_reports_to", LOG_LEVEL_ENUM.INFO)
                     return await update_one_record(
                         "relations",
                         {"reports_to": reports_to_emp_id},
@@ -180,7 +202,8 @@ class Admin(Employee):
                         emp_id,
                     )
                 elif not reports_to_emp_id:
-                    # will run in case when reports to user id is 0 (ie employee does not report to anyone)
+                    # will run in case when reports to user id is 0 (ie employee does not report to anyone as 0 employee id does not exist in db)
+                    self.logger.log(f"update_reports_to", LOG_LEVEL_ENUM.INFO)
                     return await update_one_record(
                         "relations",
                         {"reports_to": reports_to_emp_id},
@@ -194,19 +217,23 @@ class Admin(Employee):
                     {"status_code": 404, "detail": "Employee does not exist"}
                 )
         except ValueError as err:
+            self.logger.log(f"{str(err)}", LOG_LEVEL_ENUM.ERROR)
             raise ValueError(err)
         except Exception as err:
+            self.logger.log(f"{str(err)}", LOG_LEVEL_ENUM.ERROR)
             raise err
 
     async def get_reported_by(self, emp_id):
         if not await check_if_exists_in_db("employees", "empId", emp_id):
+            self.logger.log(f"Employee does not exist", LOG_LEVEL_ENUM.ERROR)
             raise ValueError("Employee does not exist.")
         else:
-            data = await read_fields_from_record(
+            relations = await read_fields_from_record(
                 "relations", "employee", "reports_to", [emp_id]
             )
-            data = [item[0] for item in data]
-            return data
+            relations = [relation[0] for relation in relations]
+            self.logger.log(f"admin get reported by", LOG_LEVEL_ENUM.INFO)
+            return relations
 
     def info(self):
         doc = """

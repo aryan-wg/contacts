@@ -39,7 +39,7 @@ async def update_request_status_with_remark(
         )
         if not status:
             raise ValueError("Invalid status value")
-        remark = req_body.remak
+        remark = req_body.remark
         data = []
         await hr_obj.update_request_status_with_remark(req_id, remark, status)
         return {"success": True, "data": data}

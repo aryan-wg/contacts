@@ -64,12 +64,13 @@ class Hr_employee(Worker):
             request = parse_requests(request)
             request = request[0]
             # request has a possible value of none which can cause error here
-            if request["assigned_hr"] == self.emp_id:
+            if not request["assigned_hr"] == self.emp_id:
                 raise ValueError("Request is assigned to different hr")
             else:
                 request["remark"] = remark
                 if request["request_status"] == "hr_assigned":
                     request["request_status"] = status
+                    request["updated_info"] = json.dumps(request["updated_info"])
                 else:
                     ValueError("Request already reviewed by HR")
 

@@ -60,7 +60,8 @@ class Admin(Employee):
         else:
             request = parse_requests(request)
             request = request[0]
-            if request["status"] == "approved_by_hr":
+            print(request)
+            if request["request_status"] == "approved_by_hr":
                 # parse the json obj of update to updated dict
                 updated_info = json.loads(request["updated_info"])
 
@@ -79,7 +80,7 @@ class Admin(Employee):
                 self.logger.log(f"Request commited {req_id}",LOG_LEVEL_ENUM.INFO)
                 return True
             else:
-                self.logger.log(f"Request can't be commited {req_id} status = {request["status"]}",LOG_LEVEL_ENUM.ERROR)
+                self.logger.log(f"Request can't be commited {req_id} status = {request["request_status"]}",LOG_LEVEL_ENUM.ERROR)
                 raise ValueError("Request can't be committed")
 
     async def create_new_employee(self, new_employee):
@@ -95,12 +96,12 @@ class Admin(Employee):
             else:
                 new_employee["password"] = hash_pass(new_employee["password"])
                 created_employee = await write_to_table("employees", new_employee)
-                self.logger.log(f"new user created empId = {created_employee["empid"]}",LOG_LEVEL_ENUM.INFO)
+                self.logger.log(f"new user created empId = {created_employee[0]}",LOG_LEVEL_ENUM.INFO)
                 return created_employee
         except ValueError as err:
             raise ValueError(err)
         except Exception as err:
-            self.logger.log(f"{str(err)}", LOG_LEVEL_ENUM.ERROR)
+            self.logger.log(f"create_new_employee {str(err)}", LOG_LEVEL_ENUM.ERROR)
             raise Exception(err)
 
     async def create_new_relation(self, emp_id, reports_to_emp_id):
@@ -118,7 +119,7 @@ class Admin(Employee):
                 self.logger.log(f"employee does not exist in db emp id = {emp_id}",LOG_LEVEL_ENUM.ERROR)
                 return False
         except Exception as err:
-            self.logger.log(f"{str(err)}", LOG_LEVEL_ENUM.ERROR)
+            self.logger.log(f"create_new_relation {str(err)}", LOG_LEVEL_ENUM.ERROR)
             raise Exception(err)
 
     async def remove_employee(self, emp_id):

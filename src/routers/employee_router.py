@@ -36,7 +36,7 @@ async def create_employee(new_employee: EmployeeInfo, admin_obj:Annotated[Admin,
         )
         return {
             "success": True,
-            "message": "Employee created successfuly",
+            "message": "Employee created successfully",
             "emp_id": created_emp[0],
         }
     except ValueError as err:
